@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(Vector
         VERSION 1.0.0
-        DESCRIPTION "Builder Pattern by Vince Houston")
+        DESCRIPTION "Vector")
 
 
 # add_executable(vector_insert)
