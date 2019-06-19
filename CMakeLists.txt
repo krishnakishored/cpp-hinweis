@@ -10,4 +10,5 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(STLContainers)
 add_subdirectory(Threads)
+add_subdirectory(OOAD)
 # add_subdirectory(STLAlgorithms)
