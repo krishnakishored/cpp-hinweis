@@ -16,5 +16,11 @@ add_executable(Threads3)
 target_sources(Threads3 PRIVATE threads_3.cpp)
 target_compile_features(Threads3 PRIVATE cxx_std_14) 
 
+add_executable(Threads4)
+target_sources(Threads4 PRIVATE threads_4.cpp)
+target_compile_features(Threads4 PRIVATE cxx_std_14) 
 
 
+add_executable(Threads5)
+target_sources(Threads5 PRIVATE threads_5.cpp)
+target_compile_features(Threads5 PRIVATE cxx_std_14) 

@@ -59,8 +59,6 @@ void ExecuteThread(int id){
             std::ctime(&sleepTime) << "\n";
     
 }
-// ----- END SIMPLE THREAD EXAMPLE ----- 
-
 
 int main()
 {
