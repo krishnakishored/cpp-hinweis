@@ -1,5 +1,3 @@
-// ---------- C++ TUTORIAL 16 ----------
-
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -12,6 +10,9 @@
 #include <chrono>
 #include <ctime>
 #include <mutex>
+
+using namespace std::chrono_literals; // for operator""s
+
 
 // ---------- race condition -----------
 using std::vector;
@@ -69,7 +70,7 @@ class Account{
             // std::lock_guard<std::mutex> guard1(mutex); // bad idea -  two mutexs - one after other
             std::lock(mutex,other.mutex);
             std::lock_guard<std::mutex> guard1(mutex,std::adopt_lock); // handles only unlocking 
-            // std::this_thread::sleep_for(2s);//simulate delay;
+            std::this_thread::sleep_for(2s);//simulate delay;
             cout<< "acquired one.. waiting for the other\n";
             // std::lock_guard<std::mutex> guard2(other.mutex);  // bad idea -  two mutexs - one after other
             std::lock_guard<std::mutex> guard2(other.mutex,std::adopt_lock);
@@ -82,7 +83,7 @@ class Account{
          void transferFrom_usingUniqueLock(Account& other, int amount){
             
             std::unique_lock<std::mutex> lock1(mutex,std::defer_lock);
-            // std::this_thread::sleep_for(2s);//simulate delay;
+            std::this_thread::sleep_for(2s);//simulate delay;
             std::unique_lock<std::mutex> lock2(other.mutex,std::defer_lock);
             cout<< "request lock\n";
             std::lock(lock1,lock2);
@@ -136,19 +137,112 @@ class Resource{
 void useResource(Resource& resource){
     if(resource.isAvailable()){
         cout << "is available\n " ;
-        // std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(2s);
         cout<< resource.use()<<"\n";
     }
 }
 
+class Resource2 // using unique_lock
+{
+    private:
+        bool used = false;
+        std::mutex external;
+        std::mutex mutex;
+    
+    public:
+        auto getlock() {return std::unique_lock<std::mutex> {external};}
+        bool isAvailable(){
+            std::lock_guard<std::mutex> guard(mutex);
+            return !used;
+        }
+
+        string use(){
+            std::lock_guard<std::mutex> guard(mutex);
+            if(!used){
+                used = true;
+                return "It's for you";
+            }
+            else{
+                return "it's gone";
+            }
+        }
+};
+
+void useResource2(Resource2& resource){
+    auto lock = resource.getlock();
+    if(resource.isAvailable()){
+        cout << "is available!\n";
+    }
+}
+
+
+// -- Another approach
+class Resource3 // using unique_lock
+{
+    private:
+        bool used = false;
+        std::mutex external;
+        std::mutex mutex;
+    
+    public:
+        void operateOn(std::function<void(Resource3&)> func){
+            std::unique_lock<std::mutex> guard(external);
+            func(*this);
+        }
+
+        auto getlock() {return std::unique_lock<std::mutex> {external};}
+        bool isAvailable(){
+            std::lock_guard<std::mutex> guard(mutex);
+            return !used;
+        }
+
+        string use(){
+            std::lock_guard<std::mutex> guard(mutex);
+            if(!used){
+                used = true;
+                return "It's for you";
+            }
+            else{
+                return "it's gone";
+            }
+        }
+};
+
+void useResource3(Resource3& resource){
+    resource.operateOn([](Resource3& resource){
+        if(resource.isAvailable()){
+            cout << "is available!\n";
+            std::this_thread::sleep_for(2s);
+        }
+    });    
+}
+
+
+
 int main(){
 
-    Resource resource;
-    std::thread thread1(useResource,std::ref(resource));
-    std::thread thread2(useResource,std::ref(resource));
+    // Resource resource;
+    // std::thread thread1(useResource,std::ref(resource));
+    // std::thread thread2(useResource,std::ref(resource));
 
-    thread1.join();
-    thread2.join();
+    // thread1.join();
+    // thread2.join();
+
+
+
+    Resource2 resource2;
+    std::thread thread3(useResource2,std::ref(resource2));
+    std::thread thread4(useResource2,std::ref(resource2));
+
+    thread3.join();
+    thread4.join();
+
+    // Resource3 resource3;
+    // std::thread thread5(useResource3,std::ref(resource3));
+    // std::thread thread6(useResource3,std::ref(resource3));
+
+    // thread5.join();
+    // thread6.join();
 
     return 0;
 }

@@ -1,5 +1,3 @@
-// ---------- C++ TUTORIAL 16 ----------
-
 #include <cstdlib>
 #include <iostream>
 #include <string>

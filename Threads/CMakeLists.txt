@@ -24,3 +24,15 @@ target_compile_features(Threads4 PRIVATE cxx_std_14)
 add_executable(Threads5)
 target_sources(Threads5 PRIVATE threads_5.cpp)
 target_compile_features(Threads5 PRIVATE cxx_std_14) 
+
+
+add_executable(Threads6)
+target_sources(Threads6 PRIVATE threads_6.cpp)
+target_compile_features(Threads6 PRIVATE cxx_std_14) 
+
+
+add_executable(Threads7)
+target_sources(Threads7 PRIVATE threads_7.cpp)
+target_compile_features(Threads7 PRIVATE cxx_std_14) 
+
+

@@ -35,8 +35,29 @@
     - unlike lock_guard, these are movable (but not copyable)
     - they can be locked later - in deferred mode if desired
     - you can unlock and lock again on this one as needed
+    - When to use unique_lock & When to use lock_guard
 
-  
+14. Condition_variable
+    - When wait is called, it checks the condition for 'true' and then proceeds
+    - if the condition is false, it will release the lock and wait.
+    - Once notified, it will acquire the lock, checks the condition. If condition is satisfied, moves forward. Otherwise releases the lock and waits.
+15. Anytime you call a function that will wait for some thread or task to complete, always specify a timeout.  Look for variations of wait that take a timeout - duration & until a particular time
+
+16. Future
+    - A future is useful of one-off event & it may accompany some data with it.
+    - async launch options
+        * std::launch::async
+        * std::launch::deferred
+        * std::launch::deferred | std::launch::async 
+    - Future is thread safe for access by worker  thread & calling thread. 
+        But it is __not__ thread safe for multiple threads to access the same instance
+
+
+17. packaged_task
+     - A connector between a function and a future of the result of that function
+     - useful to schedule a set of functions for exection on a thread pool
+
+
 
 ## Chrono
 
