@@ -27,9 +27,15 @@ std::condition_variable signal1;
 void producer(){
     while(true){
         std::lock_guard<std::mutex> guard(product_mutex);
-        product++;
-        signal1.notify_one();
-        cout<<product<<"\n";
+        // std::unique_lock<std::mutex> guard(product_mutex);
+        product++;        
+        
+        // signal1.notify_one();
+        signal1.notify_all();
+        
+        std::this_thread::sleep_for(1s);
+        cout<<"prod "<< product<<"\n";
+        
     }
     std::this_thread::sleep_for(300ms);
 }
@@ -46,9 +52,15 @@ void consumer(string name){
 
 int main_conditionvariable()
 {
-    producer();
-    consumer("consumer1");
-    // consumer("consumer2");
+
+    std::thread th1(producer);
+    std::thread th2(consumer,"con1");
+    // std::thread th3(consumer,"con2");
+
+    th1.join();
+    th2.join();
+    // th3.join();
+
     return 0;
 }
 
@@ -174,7 +186,8 @@ int main(){
     // main_launchasync();
     // main_sharedFuture();
     // main_packagedtask();
-    main_promise();
+    // main_promise();
+    main_conditionvariable();
 
     return 0;
 }

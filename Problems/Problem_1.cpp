@@ -1,5 +1,3 @@
-// ---------- C++ TUTORIAL 8 ----------
-
 // Add this to Project Properties -std=c++14
 
 // ---------- BUBBLE SORT ----------
