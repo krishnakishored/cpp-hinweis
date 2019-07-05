@@ -28,25 +28,19 @@ int main_convertBinToHex()
     ifstream in("input.xmf");
     ofstream out("output.txt");
 
-    int fileSize = getFileSizeInBytes("input.xmf");
+    int fileSize = getFileSizeInBytes("latlon.bin");
     char inputBytes[fileSize];
 
     in.read(inputBytes,fileSize);
-    // BinUtils::toHEX((unsigned char*)inputBytes, fileSize, out);
+    BinUtils::toHEX((unsigned char*)inputBytes, fileSize, out);
 
-    // unsigned char *inBytes  = input;
-    // size_t len = 0;
-    // char val;
-    // while(in.get(val)){
-    //     inputBytes[len++]=val;
-    // }
     
 
-    size_t base64Size = BinUtils::toBase64Size(fileSize);
-    char outputBase64Bytes[base64Size];
-    BinUtils::toBase64((unsigned char*)inputBytes,fileSize,outputBase64Bytes);
+    // size_t base64Size = BinUtils::toBase64Size(fileSize);
+    // char outputBase64Bytes[base64Size];
+    // BinUtils::toBase64((unsigned char*)inputBytes,fileSize,outputBase64Bytes);
 
-    out.write(outputBase64Bytes,base64Size);
+    // out.write(outputBase64Bytes,base64Size);
 
 
     return 0;
