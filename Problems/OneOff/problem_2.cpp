@@ -55,8 +55,8 @@ int main_sampleStdFunctions()
 int main_appearanceArray_countingSort()
 {
 
-    ifstream f("data.in");
-    ofstream g("data.out");
+    ifstream f("./DataFiles/data.in");
+    ofstream g("./DataFiles/data.out");
     int appearanceArray[100], inputSize = 0, maximum = 0; // we have used numbers from [-10, 10]
     // if you don't know the interval of the input numbers, find the minimum number in the input
     // and add it to all numbers (instead of 10 used in this source)
@@ -109,8 +109,8 @@ int main_marsTrickery()
         Array: 1 1 1 4 5 6 |  operations: (1, 5, 2), (2, 3, 10)
         Final array: 3 13 13 6 7 6
     */
-    ifstream f("data.in");
-    ofstream g("data.out");
+    ifstream f("./DataFiles/data.in");
+    ofstream g("./DataFiles/data.out");
     int A[100], B[100], auxB, n, m, Aelements, i, j, Left, Right, X, nrQueries;
 
     f >> Aelements;

@@ -25,10 +25,10 @@ int main_convertBinToHex()
 {
     
  
-    ifstream in("input.xmf");
-    ofstream out("output.txt");
-
-    int fileSize = getFileSizeInBytes("latlon.bin");
+    ifstream in("./DataFiles/input.xmf");
+    ofstream out("./DataFiles/output.txt");
+    int fileSize = getFileSizeInBytes("./DataFiles/latlon.bin");
+   
     char inputBytes[fileSize];
 
     in.read(inputBytes,fileSize);
