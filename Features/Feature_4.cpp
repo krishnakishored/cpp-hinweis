@@ -6,6 +6,13 @@
 #include <sstream>
 #include <ctime>
 #include <cmath>
+#include <functional>
+#include <array>
+#include <algorithm>
+
+using std::cout;
+using std::endl;
+
 
 std::vector<int> GenerateRandVec(int numOfNums,int min, int max);
 
@@ -171,9 +178,103 @@ int main_lambda_3()
     // ----- END PROBLEM DYNAMIC LIST DIVISABLE BY A VALUE -----  
   return 0;
 }
+
+// to write programs that utilize unnamed function objects.
+
+/*
+ A lambda is the source code construct that defines an anonymous or unnamed function. 
+ The compiler uses this syntax to create a closure object from the lambda.
+*/
+
+int main_lambaexpression()
+{
+    using MyArray = std::array<uint32_t, 5>;
+    MyArray myArray{{10, 20, 30, 40, 50}}; //warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    //uses a lambda to print out all of the values in an array
+    std::for_each(myArray.cbegin(),
+                  myArray.cend(),
+                  [](auto &&number) {
+                      std::cout << number << std::endl;
+                  });
+
+    auto myClosure = [](auto &&number) { cout << number << " "; }; //captures the lambda into an auto typed variable.
+    cout << typeid(myClosure).name() << std::endl;
+    std::for_each(myArray.cbegin(), myArray.cend(), myClosure);
+    return 0;
+}
+
+// Passing a Closure into a Function
+using MyArray = std::array<uint32_t, 5>;
+using MyVector = std::vector<MyArray::value_type>;
+
+//create closures and pass them around your program using the function template
+void PrintArray(const std::function<void(MyArray::value_type)> &myFunction)
+{
+    MyArray myArray{{1, 2, 3, 4, 5}};
+    std::for_each(myArray.begin(), myArray.end(), myFunction);
+}
+
+int main_functionTemplate_closure()
+{
+    auto myClosure = [](auto &&number) { std::cout << number << std::endl; };
+    std::cout << typeid(myClosure).name() << std::endl;
+    PrintArray(myClosure);
+    return 0;
+}
+
+//to copy an array into a vector through a lambda using the capture block.
+
+int main_captureByReference()
+{
+    MyVector myCopy;
+    //use the lambda capture to store a reference to the object myCopy in the closure.
+    // auto myClosure = [&myCopy](auto &&number) {
+    //     std::cout << number << " ";
+    //     myCopy.push_back(number);
+    // };
+
+    //c++11 compatible
+    auto myClosure = [&myCopy](const MyArray::value_type& number) {
+        std::cout << number << " ";
+        myCopy.push_back(number);
+    };
+
+    std::cout << typeid(myClosure).name() << std::endl;
+    PrintArray(myClosure);
+    //  The main function ends by printing all of the values stored by myCopy to show that
+    // the closure was sharing the same vector as main thanks to the reference capture.
+    std::cout << std::endl<< "My Copy: " << " ";
+    std::for_each(myCopy.cbegin(), myCopy.cend(),
+                  [](const MyVector::value_type&  number) { std::cout << number << " "; });
+    return 0;
+}
+
+//The mutable keyword is used to tell the compiler that the lambda function should generate a closure with non-const members that have been copied by value.
+// The closures created by the compiler when they encounter a lambda function are const by default. 
+// This causes the compiler to create a type for the closure that can no longer be implicitly converted to a standard function pointer. 
+int main_mutable_capture()
+{
+    MyVector myCopy;
+    auto myClosure = [myCopy](auto &&number) mutable {
+        std::cout << number << std::endl;
+        myCopy.push_back(number);
+    };
+    std::cout << typeid(myClosure).name() << std::endl;
+    PrintArray(myClosure);
+    std::cout << std::endl<< "My Copy: " << " ";
+    std::for_each(myCopy.cbegin(), myCopy.cend(),
+                  [](auto &&number) { std::cout << number << " "; });
+    return 0;
+}
+
 int main(){
-  main_lambda_1();
+//   main_lambda_1();
   // main_lambda_2();
   // main_lambda_3();
+
+//   main_lambaexpression();
+//   main_functionTemplate_closure();
+//   main_captureByReference();
+  main_mutable_capture();
   return 0;
 }

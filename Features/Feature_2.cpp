@@ -15,9 +15,14 @@ Animal::~Animal() {}
 #include <numeric>
 #include <cmath>
 #include <sstream>
+#include <thread>
 
 #include <deque>
 #include <iterator>
+
+
+using std::cout;
+using std::endl;
 
 // ----- PREPROCESSOR DIRECTIVES -----
 
@@ -100,7 +105,7 @@ template<typename T, typename U> int Person<T, U>::numOfPeople;
 
 // ----- END OF TEMPLATE CLASSES -----
 
-int main()
+int main_TemplateClass()
 {
     Animal spot = Animal();
     spot.name = "Spot";
@@ -199,5 +204,183 @@ int main()
     
     // ----- END OF CONTAINERS -----
     
+    return 0;
+}
+
+
+class MyClass
+{
+  private:
+    static int s_Counter;
+    int *m_Member{&s_Counter};
+
+  public:
+    MyClass()
+    {
+        ++(*m_Member);
+        cout << "Constructing: " << GetValue() << endl;
+    }
+
+    MyClass(const MyClass &rhs) : m_Member(rhs.m_Member)
+    {
+        ++(*m_Member);
+        cout << "Copying: " << GetValue() << endl;
+    }
+
+    MyClass(MyClass &&rhs) : m_Member{rhs.m_Member}
+    {
+        cout << std::hex << std::showbase;
+        cout << "Moving: " << &rhs << " to " << this << endl;
+        cout << std::noshowbase << std::dec;
+        rhs.m_Member = nullptr;
+    }
+
+    // ~MyClass()
+    // {
+    //     --(*m_Member);
+    //     m_Member = nullptr;
+    //     cout << "Destructing: " << s_Counter << endl;
+    // }
+
+    ~MyClass()
+    {
+        if (m_Member)
+        {
+            --(*m_Member);
+            m_Member = nullptr;
+            cout << "Destructing: " << s_Counter << endl;
+        }
+        else
+        {
+            cout << "Destroying moved-from instance" << endl;
+        }
+    }
+
+    int GetValue() const
+    {
+        return *m_Member;
+    }
+};
+
+MyClass CopyMyClass(MyClass parameter)
+{
+    return parameter;
+}
+
+int MyClass::s_Counter{0};
+
+int main_moveConstuctor()
+{
+    auto object1 = MyClass();
+    // cout << object1.GetValue() << endl;
+    {
+        auto object2 = MyClass();
+        // cout << object2.GetValue() << endl;
+    }
+    auto object3 = MyClass();
+    // cout << object3.GetValue() << endl;
+
+    // This has the impact of needing two copies,
+    // one to copy object3 into parameter and one to copy parameter into object4.
+    auto object4 = CopyMyClass(object3);
+    return 0;
+}
+
+// Comparing Copy Constructors with Move Constructors
+
+using namespace std::literals;
+using namespace std::chrono;
+
+class MyClass_2
+{
+  private:
+    std::vector<std::string> m_String{
+        "This is a pretty long string that"
+        " must be copy constructed into"
+        " copyConstructed!"s};
+    int m_Value{1};
+
+  public:
+    MyClass_2() = default;
+    MyClass_2(const MyClass_2 &rhs) = default;
+    MyClass_2(MyClass_2 &&rhs) = default;
+    int GetValue() const
+    {
+        return m_Value;
+    }
+};
+
+int main_MoveCopy_compare()
+{
+    using MyVector = std::vector<MyClass_2>;
+    constexpr unsigned int ITERATIONS{1000000U};
+    MyVector copyConstructed(ITERATIONS);
+    int value{0};
+    auto copyStartTime = high_resolution_clock::now();
+    for (unsigned int i = 0; i < ITERATIONS; ++i)
+    {
+        MyClass_2 myClass;
+        copyConstructed.push_back(myClass);
+        value = myClass.GetValue();
+    }
+    auto copyEndTime = high_resolution_clock::now();
+    MyVector moveConstructed(ITERATIONS);
+    auto moveStartTime = high_resolution_clock::now();
+    for (unsigned int i = 0; i < ITERATIONS; ++i)
+    {
+        MyClass_2 myClass;
+        moveConstructed.push_back(std::move(myClass));
+        value = myClass.GetValue();
+    }
+    auto moveEndTime = high_resolution_clock::now();
+    cout << value << endl;
+    auto copyDuration = duration_cast<milliseconds>(copyEndTime - copyStartTime);
+    cout << "Copy lasted: " << copyDuration.count() << "ms" << endl;
+    auto moveDuration = duration_cast<milliseconds>(moveEndTime - moveStartTime);
+    cout << "Move lasted: " << moveDuration.count() << "ms" << endl;
+
+    return 0;
+}
+
+
+
+int main_systemclock()
+{
+    auto currentTimePoint = std::chrono::system_clock::now();
+    cout << "currentTimePoint: " << typeid(currentTimePoint).name() << endl;
+    auto currentTime = std::chrono::system_clock::to_time_t(currentTimePoint);
+    cout << "currentTime: " << typeid(currentTime).name() << endl;
+    auto timeText = ctime(&currentTime);
+    cout << "timeText: " << typeid(timeText).name() << endl;
+    cout << endl
+         << timeText << endl;
+    return 0;
+}
+
+using namespace std::literals ; 
+
+//use the STL time capabilities to compare one time to another
+int main_durationcast()
+{
+    auto startTimePoint = std::chrono::system_clock::now();
+    std::this_thread::sleep_for(5s);
+    auto endTimePoint = std::chrono::system_clock::now();
+    // auto timeTaken = std::chrono::duration_cast<std::chrono::nanoseconds>(endTimePoint - startTimePoint);
+    auto timeTaken = std::chrono::duration_cast<std::chrono::milliseconds>(endTimePoint - startTimePoint);
+
+    cout << "Time Taken: " << timeTaken.count() << endl;
+
+    return 0;
+}
+
+
+int main()
+{
+    main_TemplateClass();
+    main_MoveCopy_compare();
+    main_moveConstuctor();
+    main_MoveCopy_compare();
+    main_durationcast();
+    main_systemclock();
     return 0;
 }
