@@ -124,7 +124,7 @@ int main_RAIIThread(){
     return 0;
 }
 
-int main(int argc, char const *argv[])
+int main()
 {
     // main_usingFunction();
     // main_RAIIThread();

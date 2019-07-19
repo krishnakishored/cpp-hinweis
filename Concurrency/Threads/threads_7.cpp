@@ -157,6 +157,8 @@ long compute_withpromise(int position, std::promise<long> resultPromise)
     catch(...){
         resultPromise.set_exception(std::current_exception());
     }
+
+    return 0;
 }
 
 int main_promise()
@@ -177,7 +179,7 @@ int main_promise()
             cout << ex << std::endl;
         }
     }
-
+return 0;
 }
 
 int main(){

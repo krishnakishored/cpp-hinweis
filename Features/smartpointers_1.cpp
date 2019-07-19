@@ -140,7 +140,7 @@ int main_WeakPtr()
     return 0;
 }
 
-int main(int argc, char const *argv[])
+int main()
 {
     /* code */
     main_WeakPtr();

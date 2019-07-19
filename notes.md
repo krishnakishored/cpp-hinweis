@@ -613,3 +613,13 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 ## References 
 1. https://www.youtube.com/watch?v=O7gUNNYjmsM
 1. https://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
+
+~~~cpp
+
+int main(){
+	
+	return 0;
+}
+
+
+~~~

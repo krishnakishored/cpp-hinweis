@@ -31,3 +31,13 @@ target_compile_features(pointers_references_1 PRIVATE cxx_std_14)
 add_executable(exception_handling_1)
 target_sources(exception_handling_1 PRIVATE exception_handling_1.cpp)
 target_compile_features(exception_handling_1 PRIVATE cxx_std_14) 
+
+
+add_executable(templates_1)
+target_sources(templates_1 PRIVATE templates_1.cpp)
+target_compile_features(templates_1 PRIVATE cxx_std_14) 
+
+
+add_executable(templates_2)
+target_sources(templates_2 PRIVATE templates_2.cpp)
+target_compile_features(templates_2 PRIVATE cxx_std_14) 

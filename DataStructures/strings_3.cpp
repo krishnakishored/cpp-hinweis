@@ -58,7 +58,7 @@ StringLiteral MYSTRING_2{"This is a String_2!"s};
 
 } // namespace
 
-// int main_stringLiterals(int argc, char const *argv[])
+// int main_stringLiterals()
 int main_debugStringLiterals()
 {
     cout << MYSTRING << endl;

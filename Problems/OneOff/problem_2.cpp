@@ -206,7 +206,7 @@ int main_NumOfOccurrences()
 //     return 0;
 // }
 
-int main(int argc, char const *argv[])
+int main()
 {
 
     // main_sumUsingFStreams();

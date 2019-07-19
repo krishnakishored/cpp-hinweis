@@ -51,7 +51,7 @@ int main_convertBinToHex()
 //     return 0;
 // }
 
-int main(int argc, char const *argv[])
+int main()
 {
     main_convertBinToHex();
     return 0;

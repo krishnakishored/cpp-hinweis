@@ -9,8 +9,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
 add_subdirectory(STLContainers)
-add_subdirectory(Threads)
+add_subdirectory(STLAlgorithms)
+add_subdirectory(Concurrency)
 add_subdirectory(OOAD)
 add_subdirectory(Features)
 add_subdirectory(Problems)
-# add_subdirectory(STLAlgorithms)
+add_subdirectory(DataStructures)
