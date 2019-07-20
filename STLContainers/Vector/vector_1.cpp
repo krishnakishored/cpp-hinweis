@@ -1,6 +1,6 @@
 #ifndef IOSTREAM
 #define IOSTREAM
-#include<iostream>
+#include <iostream>
 #endif
 
 #ifndef LIST
@@ -11,6 +11,11 @@
 #ifndef VECTOR
 #define VECTOR
 #include<vector>
+#endif
+
+#ifndef ALGORITHM
+#define ALGORITHM
+#include <algorithm>
 #endif
 
 

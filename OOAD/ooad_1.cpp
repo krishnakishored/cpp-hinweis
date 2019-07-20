@@ -9,22 +9,24 @@
 #include <sys/stat.h>
 #include <numeric>
 #include <math.h>
+#include<time.h>
+#include<chrono>
 
 class Animal{
-    
+
     // Private variables are only available to methods in the class
 private:
     std::string name;
     double height;
     double weight;
-    
+
     // Static variables share the same value for all objects of the Animal class
     static int numOfAnimals;
 
     // Public fields and methods can be accessed by anything with access to the object
 public:
     std::string GetName(){return name;}
-    
+
     // Because we don't know what an objects name is because the class is created before the object
     // we can refer to all objects using 'this'
     // The pointer operator is used to access an objects fields and methods
@@ -33,26 +35,26 @@ public:
     void SetHeight(double height){this->height = height;}
     double GetWeight(){return weight;}
     void SetWeight(double weight){this->weight = weight;}
-    
+
     // You can declare function prototypes
     void SetAll(std::string, double, double);
-    
+
     // A constructor is called each time an object is created
     Animal(std::string, double, double);
-    
+
     // Create an overloaded constructor for when no data is passed
     Animal();
-    
+
     // A deconstructor is called automatically when an object is deleted or is no longer used
     // The default is fine, but you should create custom ones when you must release memory, or resources
     ~Animal();
-    
+
     // Static methods can only access static fields
     static int GetNumOfAnimals(){return numOfAnimals;}
-    
+
     // Created to be overwritten
     void ToString();
-    
+
 };
 
 // Refer to class fields and methods with ::
@@ -88,8 +90,8 @@ Animal::~Animal(){
 }
 
 void Animal::ToString(){
-    std::cout << this -> name << " is " << 
-            this -> height << " cms tall and " 
+    std::cout << this -> name << " is " <<
+            this -> height << " cms tall and "
             << this -> weight << " kgs in weight\n";
 }
 
@@ -100,22 +102,22 @@ private:
 public:
     // You can access to the private field name
     // by calling GetName()
-    void MakeSound(){ 
-        std::cout << "The dog " << 
-                this->GetName() << " says " << 
+    void MakeSound(){
+        std::cout << "The dog " <<
+                this->GetName() << " says " <<
                 this->sound << "\n";
     }
-    
+
     // The Dogs constructor
     Dog(std::string, double, double, std::string);
-    
+
     // The default constructor calls Animals default
     // constructor
     Dog(): Animal(){};
-    
+
     // Overwrite ToString
     void ToString();
-    
+
 };
 
 // Calls the superclasses constructor to handle initalization
@@ -126,13 +128,13 @@ Animal(name, height, weight){
 
 // Overwrite ToString
 void Dog::ToString(){
-    // Because the attributes were private in Animal they must be retrieved 
+    // Because the attributes were private in Animal they must be retrieved
     // by called the get methods
-    std::cout << this -> GetName() << " is " << this -> GetHeight() << 
-            " cms tall, " << this -> GetWeight() << 
+    std::cout << this -> GetName() << " is " << this -> GetHeight() <<
+            " cms tall, " << this -> GetWeight() <<
             " kgs in weight and says " << this -> sound << "\n";
 }
- 
+
 int main_inheritance()
 {
     // Create object without setting values in constructor
@@ -142,26 +144,26 @@ int main_inheritance()
     fred.SetName("Fred");
     // Get the values for the Animal
     fred.ToString();
-    
+
     fred.SetAll("Fred", 34, 12);
-    
+
     fred.ToString();
-    
+
     // Setting values with constructor
     Animal tom("Tom", 36, 15);
     tom.ToString();
-    
+
     // Demonstrate inherited Dog class
     Dog spot("Spot", 38, 16, "Wooof");
-    
+
     // See different output from overwritten ToString()
     spot.ToString();
-    
+
     // Call static methods by using the class name to
     // show the total Animals created
-    std::cout << "Number of Animals " << 
+    std::cout << "Number of Animals " <<
             Animal::GetNumOfAnimals() << "\n";
-    
+
     return 0;
 }
 
@@ -196,7 +198,7 @@ public:
         this->attkMax = attkMax;
         this->blockMax = blockMax;
     }
-    
+
     // The attack and block amount will be random
     int Attack(){
         return std::rand() % this->attkMax;
@@ -210,7 +212,7 @@ class Battle{
 public:
     // We pass warriors into the function by reference so we can
     // track continued damage to each
-    
+
     // We continue to loop having each warrior take turns attacking
     // until a warriors health < 0
     static void StartFight(Warrior& warrior1, Warrior& warrior2){
@@ -225,23 +227,23 @@ public:
             }
         }
     }
-    
+
     static std::string GetAttackResult(Warrior& warriorA, Warrior& warriorB)
     {
         // Get random attack & block amounts and calculate damage
         int warriorAAttkAmt = warriorA.Attack();
         int warriorBBlockAmt = warriorB.Block();
         int damage2WarriorB = ceil(warriorAAttkAmt - warriorBBlockAmt);
-        
+
         // Change health total if > 0 and output changes
         damage2WarriorB = (damage2WarriorB <= 0) ? 0 : damage2WarriorB;
         warriorB.health = warriorB.health - damage2WarriorB;
-        printf("%s attacks %s and deals %d damage\n", 
+        printf("%s attacks %s and deals %d damage\n",
                 warriorA.name.c_str(), warriorB.name.c_str(),
                 damage2WarriorB);
         printf("%s is down to %d health\n", warriorB.name.c_str(),
                 warriorB.health);
-        
+
         // Once health < 0 end game by passing back Game Over
         if(warriorB.health <= 0){
             printf("%s has Died and %s is Victorious\n",
@@ -252,19 +254,19 @@ public:
         }
     }
 };
- 
+
 int main_warriors()
 {
     // Seed the random number generator
     srand(time(NULL));
-    
+
     // Create warriors
     Warrior tom("Thor", 100, 35, 15);
     Warrior sam("Hulk", 125, 25, 10);
-    
+
     // Create battle and have it run on its own till completion
     Battle::StartFight(tom, sam);
-    
+
     return 0;
 }
 

@@ -16,12 +16,14 @@
 #include<string>
 #endif
 
+#include<cstring>
+
 // #include <cinttypes>
 using std::cout;
 using std::endl;
 
 
-// The class in Listing 5-10 doesn’t store the value in a uint32_t member; instead, it stores a vector of Wheel objects. 
+// The class in Listing 5-10 doesn’t store the value in a uint32_t member; instead, it stores a vector of Wheel objects.
 class Wheel{};
 
 class Vehicle_withWheels
@@ -31,7 +33,7 @@ private:
     Wheels m_Wheels;
 
 public:
-    void SetNumberOfWheels(uint32_t numberOfWheels) // The SetNumberOfWheels method adds a new instance of Wheel to the vector for the number supplied as its numberOfWheels parameter. 
+    void SetNumberOfWheels(uint32_t numberOfWheels) // The SetNumberOfWheels method adds a new instance of Wheel to the vector for the number supplied as its numberOfWheels parameter.
     {
         m_Wheels.clear();
         for(uint32_t i=0;i<numberOfWheels;i++){
@@ -42,7 +44,7 @@ public:
     uint32_t GetNumberOfWheels()
     {
         return m_Wheels.size();// The GetNumberOfWheels method returns the size of the vector
-    }    
+    }
 };
 
 class Vehicle_basic
@@ -51,10 +53,10 @@ class Vehicle_basic
 private:
         uint32_t m_NumberOfWheels{};// initialized using uniform initialization
         //  No value is supplied to the initializer, which causes the compiler to initialize the value to 0.
-        
+
         // uint32_t m_NumberOfWheels;
 public:
-    //adding a constructor to the class means you can no longer construct default versions of this class; 
+    //adding a constructor to the class means you can no longer construct default versions of this class;
     //overcome this limitation by adding an explicit default operator to the class.
     Vehicle_basic() = default;
     //ctor
@@ -125,7 +127,7 @@ int main_Vehicle_withDestructor()
     cout << "Number of wheels: " << myMotorcycle.GetNumberOfWheels() << endl;
     Vehicle_withDestructor noWheels;
     cout << "Number of wheels: " << noWheels.GetNumberOfWheels() << endl;
-    // The Vehicle objects are destroyed in an order that’s the reverse of that in which they were created. 
+    // The Vehicle objects are destroyed in an order that’s the reverse of that in which they were created.
     return 0;
 }
 
@@ -139,7 +141,7 @@ private:
 public:
     Vehicle_shallowCopy() = default;
     Vehicle_shallowCopy(std::string name, uint32_t numberOfWheels): m_Name{ name }, m_NumberOfWheels{ numberOfWheels }{}
-    ~Vehicle_shallowCopy() 
+    ~Vehicle_shallowCopy()
     {
         cout << m_Name << " at " << this << " is being destroyed!" << endl;
     }
@@ -165,7 +167,7 @@ int main_Vehicle_shallowCopy(){
     cout << "Number of wheels: " << myCar.GetNumberOfWheels() << endl;
     Vehicle_shallowCopy myMotorcycle{ "myMotorcycle", 2 };
     cout << "Number of wheels: " << myMotorcycle.GetNumberOfWheels() << endl;
-    
+
     Vehicle_shallowCopy myCopiedCar{ myCar }; //fails if copy ctor(=delete) is disallowed
     cout << "Number of wheels: " << myCopiedCar.GetNumberOfWheels() << endl;
 
@@ -219,17 +221,17 @@ public:
 
 
     // If the object you’re copying from is about to destroyed.
-    // C++ allows you to optimize such situations using move semantics. 
+    // C++ allows you to optimize such situations using move semantics.
 
 
     // Move semantics work by providing class methods that take rvalue references as parameters.
-    Vehicle(Vehicle&& other) 
+    Vehicle(Vehicle&& other)
     {
         m_Name = other.m_Name;
         other.m_Name = nullptr;
         m_NumberOfWheels = other.m_NumberOfWheels;
     }
-    
+
     Vehicle& operator=(Vehicle&& other)
     {
         if(m_Name != nullptr){
@@ -237,9 +239,9 @@ public:
         }
         m_Name = other.m_Name;
         /*
-        The move assignment operator releases the memory that the object may already have been using for m_Name. 
-        Importantly, it then copies the address from other before setting other.m_Name to nullptr. 
-        */     
+        The move assignment operator releases the memory that the object may already have been using for m_Name.
+        Importantly, it then copies the address from other before setting other.m_Name to nullptr.
+        */
         //Setting the other object’s pointer to nullptr prevents that object from deleting the memory in its destructor
         other.m_Name = nullptr;
 
@@ -267,13 +269,13 @@ int main_Vehicle_MoveSemantics()
 
 
         // myAssignedCar = myCar;// default assignment operator with shallow copy
-        
+
         myAssignedCar = std::move(myCar);
         // cout << "Vehicle name: " << myCar.GetName() << endl;//segmentation fault - myCar.m_Name is no longer available after move
         cout << "Vehicle name: " << myAssignedCar.GetName() << endl;
     }
     cout << "Vehicle name: " << myAssignedCar.GetName() << endl;//pointer being freed was not allocated
-    return 0; 
+    return 0;
 }
 
 int main(){
@@ -282,7 +284,7 @@ int main(){
     main_Vehicle_MoveSemantics();
     main_Vehicle_shallowCopy();
     main_Vehicle_withDestructor();
-    
+
 
     return 0;
 }

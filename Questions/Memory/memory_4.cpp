@@ -13,6 +13,9 @@
 #include <cstdlib>
 #endif
 
+#include<chrono>
+#include<cstring>
+
 using std::cout;
 using std::endl;
 using namespace std::chrono;

@@ -13,6 +13,9 @@
 #include <vector>
 #endif
 
+#include<limits>
+#include<algorithm>
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -46,7 +49,7 @@ vector<int> freqQuery(vector<vector<int>> queries) {
     return v;
 }
 /*
-The first line contains of an integer q, the number of queries. 
+The first line contains of an integer q, the number of queries.
 Each of the next q lines contains two integers denoting the 2-d array .
 
  Operation   Array   Output
@@ -104,7 +107,7 @@ int main_freqQuery()
 }
 
 /*
-The first line contains two space-separated integers n and r , the size of arr and the common ratio. 
+The first line contains two space-separated integers n and r , the size of arr and the common ratio.
 The next line contains n space-seperated integers arr[i]
 4 2
 1 2 2 4
@@ -116,7 +119,7 @@ indices: (0,1,3)(0,2,3)
 5 5
 1 5 5 25 125
 
-o/p: 4 
+o/p: 4
 (0,1,3)(0,2,3)(1,3,4)(2,3,4)
 
 */
@@ -210,7 +213,7 @@ vector<string> split(const string &str) {
 
 /*
 Input Format
-The first line contains an integer , the number of queries. 
+The first line contains an integer , the number of queries.
 Each of the next  lines contains a string  to analyze.
 
 //Given a string, find the number of pairs of substrings of the string that are anagrams of each other.
@@ -218,7 +221,7 @@ Each of the next  lines contains a string  to analyze.
 abba
 abcd
 
-o/p: 4 --> (a,a),(b,b),(abb,bba) (ab,ba) 
+o/p: 4 --> (a,a),(b,b),(abb,bba) (ab,ba)
      0
 
 

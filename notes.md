@@ -497,6 +497,8 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - The ellipsis in the catch handler means that anything that is thrown will be caught. 
 
 
+##### C vs C++
+- size of an array is decided at compile time in C & at runtime in C++
 
 
 ##### general questions
@@ -610,9 +612,32 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 
 -----
 
+##### Tips to run this Project on windows using CodeBlocks
+1. Install the following 
+    - CMake, 
+    - MinGW(posix - for std::thread), 
+    - CodeBlocks (Create a new Compiler & set the path to MinGW executables (had to rename them)) 
+1. add installation location of the binaries to "PATH" environment variable
+1. Use CMake GUI ( less error prone) to generate the codeblocks project files 
+
+$ cmake --version   
+cmake version 3.15.0
+
+$ mingw32-g++.exe --version
+mingw32-g++.exe (i686-posix-dwarf-rev0, Built by MinGW-W64 project) 8.1.0
+
+
+* Alternately use cmake from cmd prompt@ project directory
+$ cmake -S . -B build -G "CodeBlocks - MinGW Makefiles"
+$ cmake --build build
+
+-----
+
 ## References 
 1. https://www.youtube.com/watch?v=O7gUNNYjmsM
 1. https://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
+1. Setup CodeBlocks - https://medium.com/@yzhong.cs/code-blocks-compile-64-bit-under-windows-with-mingw-w64-79101f5bbc02 
+
 
 ~~~cpp
 

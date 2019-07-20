@@ -1,5 +1,11 @@
 
 #include <iostream>
+
+#ifndef ALGORITHM
+#define ALGORITHM
+#include <algorithm>
+#endif
+
 #include <vector>
 
 //****************************************************************************

@@ -20,6 +20,8 @@
 #include <array>
 #endif
 
+#include<algorithm>
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -35,12 +37,12 @@ using std::vector;
  * 2. https://www.hackerrank.com/challenges/ctci-array-left-rotation/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
  * 3. https://www.hackerrank.com/challenges/new-year-chaos/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
  * 4. https://www.hackerrank.com/challenges/minimum-swaps-2/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
- *  
- * 
- * 
- 
- */ 
- 
+ *
+ *
+ *
+
+ */
+
 
 vector<string> split_string(string);
 
@@ -310,7 +312,7 @@ int main_hourglassSum()
 
     return 0;
 }
- 
+
 
 
 vector<string> split_string(string input_string)

@@ -1,7 +1,4 @@
-#ifndef IOSTREAM
-#define IOSTREAM
 #include<iostream>
-#endif
 
 #ifndef VECTOR
 #define VECTOR
@@ -17,6 +14,11 @@
 #define ALOGORITHM
 #include <algorithm>
 #endif
+
+#include <iterator>
+
+#include <functional>
+
 
 /*
  *  remove-erase, std::bind, std::placeholders, functional adapter
@@ -67,9 +69,9 @@ int main_EraseRemove()
 
 
 
-using namespace std::placeholders;
 
-/*std::bind is a Functional Adaptor i.e. it takes a function as input and returns a new function Object as an output 
+
+/*std::bind is a Functional Adaptor i.e. it takes a function as input and returns a new function Object as an output
 with with one or more of the arguments of passed function bound or rearranged.*/
 
 int add(int first, int second)
@@ -99,8 +101,12 @@ int approach_1()
 int approach_2()
 {
 	int arr[10] = { 1,20,13,4,5,6,10,28,19,15 };
-	return static_cast<int>(std::count_if(arr, arr + sizeof(arr) / sizeof(int), std::bind(&divisible, _1, 5)));
+	//error: '_1' was not declared in this scope|
+	return static_cast<int>(std::count_if(arr, arr + sizeof(arr) / sizeof(int), std::bind(&divisible, std::placeholders::_1, 5)));
 }
+
+
+
 
 int main_bind()
 {
@@ -108,14 +114,14 @@ int main_bind()
 	// Will return 9
 
 	// What if we want to fix 12 as the first argument
-	auto new_add_func = std::bind(&add, 12, _1);
+	auto new_add_func = std::bind(&add, 12, std::placeholders::_1);
 
 	x = new_add_func(5);
 	// Will return 17
 
 	std::cout << x << std::endl;
 
-	auto mod_add_func = std::bind(&add, _2, _1);//change the order 
+	auto mod_add_func = std::bind(&add, std::placeholders::_2, std::placeholders::_1);//change the order
 
 	x = mod_add_func(12, 15);
 	// Will return 27
@@ -124,13 +130,13 @@ int main_bind()
 	/*std::bind returns a function object.
 	In above examples we have either save this new function object in auto variable or used it directly.
 	But we can also store them using std::function Function object */
-	std::function<int(int) > mod_add_funcObj = std::bind(&add, 20, _1);
+	std::function<int(int) > mod_add_funcObj = std::bind(&add, 20, std::placeholders::_1);
 	x = mod_add_funcObj(15);
 	// Will return 35
 
 	std::cout << x << std::endl;
 	std::cout << approach_1() << std::endl;
-	std::cout << approach_2() << std::endl;//count_if (), takes a unary predicate - returns bool using bind
+//	std::cout << approach_2() << std::endl;//count_if (), takes a unary predicate - returns bool using bind
 
 	return 0;
 }
@@ -143,7 +149,7 @@ int main_bind()
 //auto x = 1;
 //compile time error:  x = "dummy";
 
-//Can not declare auto variable without initialization 
+//Can not declare auto variable without initialization
 //because its type is based on initiazing value.  //auto a;
 
 
@@ -233,9 +239,9 @@ int main_LambdaFn() {
 		x = x * 2;
 		std::cout << x << " ";
 		// Can modify the mul inside this lambda function because all outer scope elements has write access here.
-		
+
 	});
-	
+
 	std::cout << std::endl;
 	std::for_each(arr, arr + sizeof(arr) / sizeof(int), [=](int &x) {//got modified????
 		x = x*mul;
@@ -249,12 +255,12 @@ int main_LambdaFn() {
 
 	std::copy(arr, arr + (sizeof(arr) / sizeof(int)), std::ostream_iterator<int>(std::cout, " "));
 	std::cout << std::endl;
-	
+
 
 	std::for_each(arr, arr + sizeof(arr) / sizeof(int), [](int x) {
 
 		// No access to mul inside this lambda function because no outer scope elements are not visible here.
-	
+
 		//	std::cout<<mul<<" ";
 
 	/*Error (active)	an enclosing-function local variable cannot be referenced in a lambda body
@@ -301,14 +307,14 @@ public:
 					if (m_isIncremental){
 					data[i] = data[i] + m_count;
 				}
-					
+
 				else{
 					data[i] = data[i] - m_count;
 				}
-				
+
 
 				}
-					
+
 		return data;
 	}
 };
@@ -321,7 +327,7 @@ std::string buildCompleteMessage(std::string rawData, Encryptor encyptorFuncObj)
 	return rawData;
 }
 
-int main_Callbacks() 
+int main_Callbacks()
 {
 	std::string msg = buildCompleteMessage("SampleString", Encryptor(true, 1));
 	std::cout << msg << std::endl;

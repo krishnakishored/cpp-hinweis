@@ -19,6 +19,9 @@
 #include <stack>
 #endif
 
+#include<limits>
+#include<algorithm>
+
 using std::cin;
 using std::cout;
 using std::endl;
@@ -142,10 +145,10 @@ vector<long> riddle(vector<long> arr) {
     4
     2 6 1 12
 
-    o/p: 12 2 1 1 
+    o/p: 12 2 1 1
     */
    vector<long> v{0};
-    
+
     return v;
 }
 
@@ -236,20 +239,20 @@ int main_largestRectangle()
 
 
 class MyQueue {
-  
+
     public:
-        stack<int> stack_newest_on_top, stack_oldest_on_top;   
+        stack<int> stack_newest_on_top, stack_oldest_on_top;
         void push(int x) {
-                   
+
         }
 
         void pop() {
-            
+
         }
 
         int front() {
             return 0;
-        }   
+        }
 };
 
 
@@ -275,7 +278,7 @@ int main_MyQueue()
     MyQueue q1;
     int q, type, x;
     cin >> q;
-    
+
     for(int i = 0; i < q; i++) {
         cin >> type;
         if(type == 1) {
@@ -287,7 +290,7 @@ int main_MyQueue()
         }
         else cout << q1.front() << endl;
     }
-    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */
     return 0;
 }
 

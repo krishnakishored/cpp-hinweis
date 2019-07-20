@@ -16,6 +16,7 @@ Animal::~Animal() {}
 #include <cmath>
 #include <sstream>
 #include <thread>
+#include <functional>
 
 #include <deque>
 #include <iterator>

@@ -31,6 +31,8 @@
 #include <unordered_map>
 #endif
 
+#include <cassert>
+
 using std::cout;
 using std::endl;
 using std::string;
@@ -128,7 +130,7 @@ std::string Manager::GetString(StringID stringId) const
 }
 
 
-//Reading strings from a file 
+//Reading strings from a file
 Manager::Manager()
 {
     std::ifstream csvStringFile{"./bin/strings.csv"s};

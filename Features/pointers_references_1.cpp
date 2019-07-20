@@ -1,20 +1,20 @@
 /*
 http://www.ntu.edu.sg/home/ehchua/programming/cpp/cp4_pointerreference.html
- - A pointer variable (or pointer in short) is basically the same as the other variables, which can store a piece of data. 
+ - A pointer variable (or pointer in short) is basically the same as the other variables, which can store a piece of data.
    Unlike normal variable which stores a value (such as an int, a double, a char), a pointer stores a memory address.
  - A reference is an alias, or an alternate name to an existing variable
  -  When it is used in an expression, & denotes the address-of operator, which returns the address of a variable
     When & is used in a declaration (including function formal parameters), it is part of the type identifier and is used to declare a reference variable
 
 References vs. Pointers
-A reference works as a pointer. A reference is declared as an alias of a variable. 
+A reference works as a pointer. A reference is declared as an alias of a variable.
 It stores the address of the variable. Pointers and references are equivalent, except:
 - 1. A reference is a name constant for an address. You need to initialize the reference during declaration.
     Once a reference is established to a variable, you cannot change the reference to reference another variable.
-- 2. To get the value pointed to by a pointer, you need to use the dereferencing operator * (e.g., if pNumber is a int pointer, *pNumber returns the value pointed to by pNumber. 
+- 2. To get the value pointed to by a pointer, you need to use the dereferencing operator * (e.g., if pNumber is a int pointer, *pNumber returns the value pointed to by pNumber.
      It is called dereferencing or indirection). To assign an address of a variable into a pointer, you need to use the address-of operator & (e.g., pNumber = &number).
-    
-     On the other hand, referencing and dereferencing are done on the references implicitly. 
+
+     On the other hand, referencing and dereferencing are done on the references implicitly.
 
 - 3. In pass-by-reference with reference arguments, you use the variable name as the argument.
      In pass-by-reference with pointer arguments, you need to use &varName (an address) as the argument.
@@ -22,8 +22,8 @@ It stores the address of the variable. Pointers and references are equivalent, e
 
 
 "const" Function Reference/Pointer Parameters
-- A const function parameter can receive both const and non-const argument. 
-  But a non-const function reference/pointer parameter can only receive non-const argument. 
+- A const function parameter can receive both const and non-const argument.
+  But a non-const function reference/pointer parameter can only receive non-const argument.
 
 - You should not pass Function's local variable as return value by reference
 
@@ -45,6 +45,8 @@ It stores the address of the variable. Pointers and references are equivalent, e
 #include <string>
 #endif
 
+#include <cstring>
+
 // #include <cinttypes>
 using std::cout;
 using std::endl;
@@ -64,7 +66,7 @@ int main_Pointers_1()
     /*
     int i = 88;
     double d = 55.66;
-   
+
     int *iPtr = &i;    // int pointer pointing to an int value
     double *dPtr = &d; // double pointer pointing to a double value
 
@@ -83,10 +85,10 @@ int main_Pointers_1()
         int * iPtr2;
         *iPtr2 = 55;
         cout << *iPtr2 << endl;
-    
-        The pointer iPtr was declared without initialization, 
+
+        The pointer iPtr was declared without initialization,
         i.e., it is pointing to "somewhere" which is of course an invalid memory location.
-        The *iPtr = 55 corrupts the value of "somewhere"! 
+        The *iPtr = 55 corrupts the value of "somewhere"!
     */
 
     //null pointer
@@ -253,18 +255,18 @@ int *squarePtr(int *pNumber)
 /*
 
 //This program has a serious logical error, as local variable of function is passed back as return value by reference.
- Local variable has local scope within the function, and its value is destroyed after the function exits. 
+ Local variable has local scope within the function, and its value is destroyed after the function exits.
 
 int * squarePtr_2(int number) {
    int localResult = number * number;
-   return &localResult; 
-   //address of stack memory associated with local variable 'localResult' returned 
+   return &localResult;
+   //address of stack memory associated with local variable 'localResult' returned
 }
- 
+
 int & squareRef_2(int number) {
    int localResult = number * number;
    return localResult;
-//reference to stack memory associated with local variable 'localResult' returned 
+//reference to stack memory associated with local variable 'localResult' returned
 }
 
 //Passing Dynamically Allocated Memory as Return Value by Reference
@@ -272,7 +274,7 @@ int * squarePtr(int number) {
    int * dynamicAllocatedResult = new int(number * number);
    return dynamicAllocatedResult;
 }
- 
+
 int & squareRef(int number) {
    int * dynamicAllocatedResult = new int(number * number);
    return *dynamicAllocatedResult;
@@ -392,8 +394,8 @@ int main_ArrayAsAPointer()
 void fun(const int *arr, int size)
 {
     /*
-    In main, the sizeof array is 20 (4 bytes per int, length of 5). 
-    Inside the function, the sizeof is 4, which is the sizeof int pointer (4-byte address). 
+    In main, the sizeof array is 20 (4 bytes per int, length of 5).
+    Inside the function, the sizeof is 4, which is the sizeof int pointer (4-byte address).
     This is why you need to pass the size into the function.
     */
     cout << "sizeof in function is " << sizeof(arr) << endl;
@@ -465,11 +467,11 @@ int count(const char *str, const char c)
 //Function Pointer
 /*
     In C/C++, functions, like all data items, have an address.
-    The name of a function is the starting address where the function resides in the memory, and therefore, can be treated as a pointer. 
+    The name of a function is the starting address where the function resides in the memory, and therefore, can be treated as a pointer.
 
 // Function-pointer declaration
 return-type (* function-ptr-name) (parameter-list)
- 
+
 // Examples
 double (*fp)(int, int)  // fp points to a function that takes two ints and returns a double (function-pointer)
 double *dp;             // dp points to a double (double-pointer)
@@ -504,15 +506,15 @@ int main_funPtr()
     return 0;
 }
 /*
-//A void pointer can hold address of any data type (except function pointer). 
-We cannot operate on the object pointed to by void pointer, as the type is unknown. 
+//A void pointer can hold address of any data type (except function pointer).
+We cannot operate on the object pointed to by void pointer, as the type is unknown.
 We can use a void pointer to compare with another address.
 */
 
 
 int main_pointerConsts()
 {
-    //1.Non-constant pointer to constant data: 
+    //1.Non-constant pointer to constant data:
     //Data pointed to CANNOT be changed; but pointer CAN be changed to point to another data.
     int i1 = 8, i2 = 9;
     const int * iptr1 = &i1;  // non-constant pointer pointing to constant data
@@ -520,7 +522,7 @@ int main_pointerConsts()
     iptr1 = &i2;  // okay
     cout<<iptr1<<endl;//0x7ffee2d755b4
 
-    //2. Constant pointer to non-constant data: 
+    //2. Constant pointer to non-constant data:
     //Data pointed to CAN be changed; but pointer CANNOT be changed to point to another data.
 
     int * const iptr2 = &i1;  // constant pointer pointing to non-constant data
@@ -529,15 +531,15 @@ int main_pointerConsts()
     // iptr2 = &i2;  // error: assignment of read-only variable
     cout<<iptr2<<endl;//0x7ffee2d755b8
 
-    //3. Constant pointer to constant data: 
+    //3. Constant pointer to constant data:
     //Data pointed to CANNOT be changed; and pointer CANNOT be changed to point to another data.
     const int * const iptr3 = &i1;  // constant pointer pointing to constant data
     // *iptr3 = 9;   // error: assignment of read-only variable
     // iptr3 = &i2;  // error: assignment of read-only variable
     cout<<iptr3<<endl; //0x7ffee2d755b8
 
-    // 4. Non-constant pointer to non-constant data: 
-    //Data pointed to CAN be changed; and pointer CAN be changed to point to another data. 
+    // 4. Non-constant pointer to non-constant data:
+    //Data pointed to CAN be changed; and pointer CAN be changed to point to another data.
     int * iptr4 = &i1;  // non-constant pointer pointing to non-constant data
     *iptr4 = 9;   // okay
     iptr4 = &i2;  // okay

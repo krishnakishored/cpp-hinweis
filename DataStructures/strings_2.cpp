@@ -38,6 +38,8 @@
 #include <exception>
 #endif
 
+
+#include<algorithm>
 #include <locale>
 
 using std::basic_string;

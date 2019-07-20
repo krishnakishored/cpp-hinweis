@@ -24,10 +24,11 @@
 #include<iterator>
 #endif
 
+#include <functional>
 
 /*
  *  generator, for_each, find_if
- *  
+ *
  */
 
 //http://thispointer.com/stdgenerate-tutorial-and-example/

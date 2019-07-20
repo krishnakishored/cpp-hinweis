@@ -21,6 +21,8 @@
 #include <list>
 #endif
 
+#include<algorithm>
+
 // #include <cinttypes>
 using std::cout;
 using std::endl;
@@ -39,7 +41,7 @@ class Foo
 
   private:
     int counter_;
-    string *str_; 
+    string *str_;
 };
 
 class HasARef{
@@ -179,8 +181,8 @@ int main_keepTrackOfObjects_staticMember()
 }
 
 int main_dynamicCast()
-{ 
-    
+{
+
     //Using runtime type identification
     Base b2, bb;
     Derived d;
@@ -216,6 +218,6 @@ int main(){
      main_FactoryMethod();
      main_initializerList();
      main_keepTrackOfObjects_staticMember();
-    
+
     return 0;
 }

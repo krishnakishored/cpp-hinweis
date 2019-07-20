@@ -7,6 +7,7 @@
 #include <cmath>
 #include <sstream>
 
+#include <functional>
 
 using std::cout;
 using std::endl;

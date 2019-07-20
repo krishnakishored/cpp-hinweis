@@ -10,6 +10,7 @@
 #include <chrono>
 #include <ctime>
 #include <mutex>
+#include <functional>
 
 using namespace std::chrono_literals; // for operator""s
 
@@ -30,7 +31,7 @@ std::mutex a_count_mutex;
 
 void change_avoidRace(int by)
 {
-    /* avoid race condition unless there's an exception 
+    /* avoid race condition unless there's an exception
     or a thread misses to unlock the mutex */
     // a_count_mutex.lock();
 
@@ -64,12 +65,12 @@ class Account{
         std::mutex mutex;
     public:
         Account(int balance): balance(balance){}
-        int getBalance()const {return balance;} 
-        
+        int getBalance()const {return balance;}
+
         void transferFrom(Account& other, int amount){
             // std::lock_guard<std::mutex> guard1(mutex); // bad idea -  two mutexs - one after other
             std::lock(mutex,other.mutex);
-            std::lock_guard<std::mutex> guard1(mutex,std::adopt_lock); // handles only unlocking 
+            std::lock_guard<std::mutex> guard1(mutex,std::adopt_lock); // handles only unlocking
             std::this_thread::sleep_for(2s);//simulate delay;
             cout<< "acquired one.. waiting for the other\n";
             // std::lock_guard<std::mutex> guard2(other.mutex);  // bad idea -  two mutexs - one after other
@@ -81,7 +82,7 @@ class Account{
 
 
          void transferFrom_usingUniqueLock(Account& other, int amount){
-            
+
             std::unique_lock<std::mutex> lock1(mutex,std::defer_lock);
             std::this_thread::sleep_for(2s);//simulate delay;
             std::unique_lock<std::mutex> lock2(other.mutex,std::defer_lock);
@@ -109,13 +110,13 @@ int main_uniquelock(){
     return 0;
 }
 
-// --- Another Race Condition 
+// --- Another Race Condition
 
 class Resource{
     private:
         bool used = false;
         std::mutex mutex;
-    
+
     public:
         bool isAvailable(){
             std::lock_guard<std::mutex> guard(mutex);
@@ -148,7 +149,7 @@ class Resource2 // using unique_lock
         bool used = false;
         std::mutex external;
         std::mutex mutex;
-    
+
     public:
         auto getlock() {return std::unique_lock<std::mutex> {external};}
         bool isAvailable(){
@@ -183,7 +184,7 @@ class Resource3 // using unique_lock
         bool used = false;
         std::mutex external;
         std::mutex mutex;
-    
+
     public:
         void operateOn(std::function<void(Resource3&)> func){
             std::unique_lock<std::mutex> guard(external);
@@ -214,7 +215,7 @@ void useResource3(Resource3& resource){
             cout << "is available!\n";
             std::this_thread::sleep_for(2s);
         }
-    });    
+    });
 }
 
 
