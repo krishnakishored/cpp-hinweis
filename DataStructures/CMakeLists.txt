@@ -3,18 +3,6 @@ project(DS
         VERSION 1.0.0
         DESCRIPTION "DataStructures")
 
-add_executable(arrays_1)
-target_sources(arrays_1 PRIVATE arrays_1.cpp)
-target_compile_features(arrays_1 PRIVATE cxx_std_14) 
-
-add_executable(hashmaps_1)
-target_sources(hashmaps_1 PRIVATE hashmaps_1.cpp)
-target_compile_features(hashmaps_1 PRIVATE cxx_std_14) 
-
-add_executable(stacks_queues_1)
-target_sources(stacks_queues_1 PRIVATE stacks_queues_1.cpp)
-target_compile_features(stacks_queues_1 PRIVATE cxx_std_14) 
-
 
 add_executable(strings_1)
 target_sources(strings_1 PRIVATE strings_1.cpp)

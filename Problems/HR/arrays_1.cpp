@@ -32,15 +32,14 @@ using std::streamsize;
 using std::string;
 using std::vector;
 
+using std::rotate;
+
 /**
  * 1. https://www.hackerrank.com/challenges/2d-array/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrayss
  * 2. https://www.hackerrank.com/challenges/ctci-array-left-rotation/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
  * 3. https://www.hackerrank.com/challenges/new-year-chaos/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
  * 4. https://www.hackerrank.com/challenges/minimum-swaps-2/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=arrays
- *
- *
- *
-
+ * 
  */
 
 
@@ -169,6 +168,33 @@ o/p: 3
 
 */
 
+/**
+ * std::iota()
+ * Fills the range [first, last) with sequentially increasing values, starting with value and repetitively evaluating ++value.
+ */
+
+    int numBribes = 0;
+    int jump = 0;
+    for(int i=0;i<q.size();i++){
+        jump = q[i]-i;
+        if (jump > 3) 
+        {
+         std::cout << "Too chaotic\n";
+         return;
+        }
+        else if(jump <= 0)
+        {
+         continue;
+        }
+        else
+        {
+            numBribes += jump-1;
+        }
+    }
+ 
+    cout<< numBribes<<"\n";
+
+
 }
 
 int main_minimumBribes()
@@ -207,19 +233,40 @@ int main_minimumBribes()
 // Complete the rotLeft function below.
 vector<int> rotLeft(vector<int> a, int d) {
     /*
-        Given an array  of  integers and a number, , perform  left rotations on the array. Return the updated array to be printed as a single line of space-separated integers.
+        Given an array  of  integers and a number, , perform  left rotations on the array. 
+        Return the updated array to be printed as a single line of space-separated integers.
         5 4
         1 2 3 4 5
 
         o/p: 5 1 2 3 4
     */
-    vector<int> v{0};
-    return v;
+    /* Tip to avoid the unneccessary iterations:
+     * Take that remainder (modulus) and that's the first element's index in the old array. 
+     * For example, 24 rotations in a 5 element long array means that the 1st element in the new array is in the 4th index of the old array.(24 % 5 = 4)
+     */
+    
+    int len = a.size();
+    std::rotate(a.begin(),a.begin()+(d%len),a.end());
+
+    return a;
+}
+
+
+// Complete the rotRight function below.
+vector<int> rotRight(vector<int> a, int d) {
+    /*
+        4 2
+        9 3 4 1
+        o/p: 4 1 9 3
+    */  
+    std::rotate(a.rbegin(),a.rbegin()+d,a.rend());
+    return a;
 }
 
 int main_rotLeft()
 {
-    ofstream fout(getenv("OUTPUT_PATH"));
+    // ofstream fout(getenv("OUTPUT_PATH"));
+    std::ofstream fout("./DataFiles/stringOutput.txt");
 
     string nd_temp;
     getline(cin, nd_temp);
@@ -244,6 +291,7 @@ int main_rotLeft()
     }
 
     vector<int> result = rotLeft(a, d);
+    //vector<int> result = rotRight(a,d);
 
     for (int i = 0; i < result.size(); i++) {
         fout << result[i];
@@ -263,7 +311,8 @@ int main_rotLeft()
 
 int hourglassSum(vector<vector<int>> arr) {
 
-    // Complete the function hourglassSum in the editor below. It should return an integer, the maximum hourglass sum in the array.
+    // Complete the function hourglassSum in the editor below.
+    //It should return an integer, the maximum hourglass sum in the array.
     /*
 
     a b c
@@ -349,10 +398,10 @@ vector<string> split_string(string input_string)
 
 int main()
 {
-    main_arrayManipulation();
-    main_minimumSwaps();
+//    main_arrayManipulation();
+//    main_minimumSwaps();
     main_minimumBribes();
-    main_rotLeft();
-    main_hourglassSum();
+    // main_rotLeft();
+//    main_hourglassSum();
     return 0;
 }
