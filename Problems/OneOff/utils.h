@@ -2,6 +2,13 @@
 #include <fstream>
 #include <string>
 
+
+
+template <typename T>
+void Swap(T &n1, T &n2);
+
+
+
 class BinUtils
 {
 public:

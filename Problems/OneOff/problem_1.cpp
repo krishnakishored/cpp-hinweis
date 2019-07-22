@@ -56,15 +56,12 @@ void BubbleSort(std::vector<int>& theVec){
 // The Bubble sort is a way to sort a list
 // It works this way
 // 1. An outer loop decreases in size each time
-// 2. The goal is to have the largest number at 
-// the end of the list when the outer loop 
+// 2. The goal is to have the largest number at  the end of the list when the outer loop 
 // completes 1 cycle
-// 3. The inner loop starts comparing indexes 
-// at the beginning of the loop
+// 3. The inner loop starts comparing indexes at the beginning of the loop
 // 4. Check if list[Index] > list[Index + 1]
 // 5. If so swap the index values
-// 6. When the inner loop completes the largest number is at
-// the end of the list
+// 6. When the inner loop completes the largest number is at the end of the list
 // 7. Decrement the outer loop by 1
  
 // Create the value that will decrement for the outer loop

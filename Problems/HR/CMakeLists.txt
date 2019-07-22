@@ -19,3 +19,8 @@ target_compile_features(hashmaps_1 PRIVATE cxx_std_14)
 add_executable(stacks_queues_1)
 target_sources(stacks_queues_1 PRIVATE stacks_queues_1.cpp)
 target_compile_features(stacks_queues_1 PRIVATE cxx_std_14) 
+
+add_executable(sorting_1)
+target_sources(sorting_1 PRIVATE sorting_1.cpp)
+target_compile_features(sorting_1 PRIVATE cxx_std_14) 
+

@@ -72,14 +72,28 @@ long arrayManipulation(int n, vector<vector<int>> queries) {
     o/p: 200
     */
 
-    long num{0};
-    return num;
+   vector<int> inputArray(n,0), auxArray(n,0);
+   int auxSum = 0;
+    for(auto query:queries){
+       auxArray[query[0]-1]+=query[2];
+       auxArray[query[1]]-=query[2];
+    }
+    
+    for(int i=0;i<n;i++){
+        auxSum += auxArray[i];
+        inputArray[i] += auxSum;
+    }
+    
+    auto max_num = std::max_element(inputArray.begin(),inputArray.end());
+    
+    return (long)*max_num;
 }
 
 
 int main_arrayManipulation()
 {
-    ofstream fout(getenv("OUTPUT_PATH"));
+    // ofstream fout(getenv("OUTPUT_PATH"));
+    std::ofstream fout("./DataFiles/stringOutput.txt");
 
     string nm_temp;
     getline(cin, nm_temp);
@@ -112,7 +126,8 @@ int main_arrayManipulation()
 
 
 // Complete the minimumSwaps function below.
-int minimumSwaps(vector<int> arr) {
+int minimumSwaps(vector<int> arr) 
+{
 
 /*
 
@@ -154,9 +169,9 @@ int main_minimumSwaps()
     return 0;
 }
 
-void minimumBribes(vector<int> q) {
+void minimumBribes(vector<int> q) 
+{
 /*
-
 2
 5
 2 1 5 3 4
@@ -398,9 +413,9 @@ vector<string> split_string(string input_string)
 
 int main()
 {
-//    main_arrayManipulation();
+   main_arrayManipulation();
 //    main_minimumSwaps();
-    main_minimumBribes();
+    // main_minimumBribes();
     // main_rotLeft();
 //    main_hourglassSum();
     return 0;
