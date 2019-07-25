@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
-project(Features
+project(ModernCPP
         VERSION 1.0.0
-        DESCRIPTION "C++ Features & quirks")
+        DESCRIPTION "Modern C++ Features & quirks")
 
 add_executable(Feature1)
 target_sources(Feature1 PRIVATE Feature_1.cpp)

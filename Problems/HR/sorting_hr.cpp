@@ -110,8 +110,66 @@ vector<string> split_string(string input_string) {
 }
 
 
+// Complete the maximumToys function below.
+int maximumToys(vector<int> prices, int k) {
+// 7 50
+// 1 12 5 111 200 1000 10
+
+    std::sort(prices.begin(),prices.end());
+    int balance = k;
+    int i=0;
+    for(;i<prices.size();i++)
+    {
+        if(balance>=prices[i]){
+            balance-=prices[i];
+            cout<<balance<<" " <<prices[i]<<"\n";
+        }
+        else{
+            break;
+        }
+    }
+    return i;
+}
+
+int main_maximumToys()
+{
+    std::ofstream fout("./DataFiles/stringOutput.txt");
+    // std::ofstream fout(getenv("OUTPUT_PATH"));
+
+    string nk_temp;
+    getline(cin, nk_temp);
+
+    vector<string> nk = split_string(nk_temp);
+
+    int n = stoi(nk[0]);
+
+    int k = stoi(nk[1]);
+
+    string prices_temp_temp;
+    getline(cin, prices_temp_temp);
+
+    vector<string> prices_temp = split_string(prices_temp_temp);
+
+    vector<int> prices(n);
+
+    for (int i = 0; i < n; i++) {
+        int prices_item = stoi(prices_temp[i]);
+
+        prices[i] = prices_item;
+    }
+
+    int result = maximumToys(prices, k);
+
+    fout << result << "\n";
+
+    fout.close();
+
+    return 0;
+}
+
 int main()
 {
-    main_countSwaps();
+    // main_countSwaps();
+    main_maximumToys();
     return 0;
 }

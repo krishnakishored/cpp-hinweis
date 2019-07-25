@@ -1,6 +1,6 @@
-## STLContainers
 
-## Concurrency
+----
+### Concurrency
 1. hardware_concurrency
 2. hyperthreading
 3. maximum number of threads
@@ -57,249 +57,7 @@
      - A connector between a function and a future of the result of that function
      - useful to schedule a set of functions for exection on a thread pool
 
-
-
-## Chrono
-
-
-
-##
------
-#### STL - Containers, Algo, Iter
-> create a table form for insert, delete operations for all the containers
-insertion into containers - multiple ways 
-- list :
-    - insertion: push_back, push_front, insert
-    - deletion : erase,remove, remove_if
-        - Remove elements from a container  - use erase() member function of the container
-
-    `remove` doesn’t actually remove anything. __It moves everything that isn’t equal to the value you specify to the beginning of the sequence, and returns an iterator that refers to the first element following them.__ Then, it is up to you to actually call erase on the container to delete the objects between [p, end), where p is the iterator returned by remove.
-    
-
-    Use `remove_if` -  if you want to remove elements that satisfy some predicate, and not simply those equal to some value
-
-    Finally, you may want to leave the original sequence alone (maybe it’s const) and copy the results minus some elements into a new sequence.use `remove_copy` and `remove_copy_if`, which work the same way as remove and remove_if, except that there is also an output iterator you pass in where the resulting data is supposed to go.
-
-    ```cpp
-    std::remove_copy(str.begin(), str.end(),std::ostream_iterator<char>(std::cout), ' ');
-    // removes the blank spaces
-    ```
-
-    - iteration & display using copy + ostream
-
-
-- set:
-    - change the default sorting, compartor
-    
-
-- map
-
-
-- deque
-
-- vector
-    - storing custom datatype 
-    - storing pointers
-    - deleting elements
-    - emplace_back vs insert
-    
-- rope 
-
-- STL containers of pointers
-
-- use `empty()` function to test a container for emptiness. Don't compare begin==end or size==0
-
-- `back_inserter` - A back_inserter is a class defined in \<iterator\> that provides a convenient way to create an output iterator that calls push_back on a sequence every time you assign a value to it. 
-- `inserter` - is a function template defined in \<iterator\> that takes a container and an iterator and returns an output iterator that calls insert on its first argument when values are assigned to it. 
-
-- `equal` to compare two sequences for equality
-
-
-- `transform` or `for_each` - used for transforming elements in sequence
-- `search`
-- `accumulate` - function from the \<numeric\> header to compute the sum, and then divide by the size to get the mean.
--  `merge` - merge merges two sorted sequences and places the result into a third
-    Both sequences must be sorted (or the output will be garbage), and neither is modified by merge
-- `inplace_merge` - if you have two sequences that are contiguous (i.e., they are parts of the same sequence), and they are sorted, and you want the entire sequence sorted, you can use inplace_merge instead of a sort algorithm. The advantage is that inplace_ merge can run in linear time if there is enough additional memory available. If there isn’t, it runs in n log n, which is the average complexity of sort anyway.
-- to know how or where two sequences differ, you can use `lexicographical_compare` or `mismatch`.
-
-- types of sortings
-- `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
-- `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
-
- `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
-
-`nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
-
-- `partition`
-- `bind2nd`
-- set opertations can be called the set operations on any sequence, not    just sets.`set_union, set_difference, set_intersection, set_symmetric_difference` - If a and b are sets symmetric difference is (a-b) U (b-a) - set of all elements that appear in one set but not the other
-- generator functions for filling containers
-- nullary functor
-- `unique_copy`, `copy` 
-```cpp
- copy(v.begin(), v.end(), ostream_iterator<string>(cout, ", "));
-```
-- write your own copy_if
-- `random_shuffle`
-- `std::function` - Class template std::function is a general-purpose polymorphic function wrapper. 
-   Instances of std::function can store, copy, and invoke any Callable target -- functions, lambda expressions, bind expressions, or other function objects, as well as pointers to member functions and pointers to data members. The stored callable object is called the target of std::function. If a std::function contains no target, it is called empty. Invoking the target of an empty std::function results in std::bad_function_call exception being thrown.
-   std::function satisfies the requirements of CopyConstructible and CopyAssignable.
-
--  types of iterators - 
-    * An `input iterator` supports advancing forward with p++ or ++p, and dereferencing with *p. __You get back an rvalue when you dereference though__. Input iterators are used for things like streams, where dereferencing an input iterator means pulling the next element off the stream, __so you can only read a particular element once__.
-    
-    * An `output iterator` supports advancing forward with p++ or ++p, and dereferenc- ing with *p. It’s different from an input iterator though, in that you can’t read from one, __you can only write to it—and only write to an element once.__ __Also unlike an input iterator, you get back an lvalue and not an rvalue, so you can assign to it but not read from it.__
-    
-    A `forward iterator` merges the functionality of an input iterator and an output iterator: it supports ++p and p++, and you can treat *p as an rvalue or an lvalue. You can use a forward iterator anywhere you need an input or an output iterator, with the added benefit that __you can read from or write to a dereferenced forward iterator as many times as you see fit.__
-    
-    As the name implies, a `bidirectional iterator` goes forward and backward. __It is a forward iterator that adds the ability to go backward using --p or p--.__
-    
-    A `random-access iterator` does everything a bidirectional iterator does, but it also __supports pointer-like operations__. You can use p[n] to access the element that is n positions after p in the sequence, or you can add to or subtract from p with +, +=, -, or -= to move the iterator forward some number of elements in constant time. You can also compare two iterators p1 and p2 with <, >, <=, or >= to determine their relative order (as long as they both point to the same sequence).
-
-    other kinds of iterators are `streamiterators` - A stream iterator is an iterator that is based on a stream instead of a range of elements in some container,and streamiterators allow you to treat streaminput as an input iterator ,`streambufferiterators`,and `rawstorageiterators`
-    `const`,`reverse`
-
-- `distance` - count no.of elements when only iterators are given
-- `max_element` & `min_element` - return iterators not values
-- `valarray` -   can be used as a numerical vector especially those on high-performance machines, can apply specialized vector optimizations to it. 
-   valarray provides numerous overloaded operators specifically for working with numerical vectors. 
-   These operators provide such functionality as vector addition and scalar multiplication.
-   The valarray template can also be used with the standard algorithms like a C-style array.
-
-- `inner_product` - computing the dot product. It can also be used for computing distance between two vectors or compute the norm of a vector
-- `std::plus`
-- `std::iterator_traits`
-
-#### OOAD
-
-- Effects of making ctor & dtor as private
-- this pointer 
-- vtables & vptr
-- usage of ' =default' & ' =delete' 
-- deep copy & shallow copy
-- disallowing copy ctor
-- copy ctor & assignment overload functions with rvalue references
-- move semantics
-- override, final keywords usage
-- pure virtual methods - Interfaces
-- virtual destructor uses, why not virtual ctor
-- friend class
-- friend operators
-- benefits of using an initializer list becomes more apparent when you have class or reference member variables, or when you are trying to deal with exceptions effectively.
-    If an object is constructed in the initializer list, and that object throws an exception during construction, the runtime environment destroys all other previ- ously constructed objects in the list, and the exception continues to the caller of the constructor. On the other hand, if you assign the argument in the body of the con- structor, then you have to handle the exception with a try/catch block.
-
-- factory pattern - using a function to create an object
-
-- resource acquisition is initialization (RAII)
-- static vs global
-    If you declare a member variable static, only one of it will ever be constructed, regardless of the number of objects of that class that are instantiated. Similarly, if you declare a variable static in a function, it is constructed at most once and retains its value from one function call to another. 
-    you should not put the definition in the header file. If you do, storage will be allocated in each implementation file that includes the header file, and either you will get a linker error or, worse, there will be several instances of this member variable in memory. This is not what you want if you need a static member variable.
-
-- opertor typeid takes an expression or a type and returns a reference to an object of type_info or a subclass of it (which is implementation defined). 
-
-    This is because typeid returns a reference to a static object, so if you call it on two objects that are the same type, you will get two references to the same thing, which is why the equality test returns true.
-
-- Use dynamic_cast operator to query the relationship between two types.
-    The only requirement is that the object argument is a polymorphic type, which means that it has at least one virtual function.
-
-- Singleton: 
-    Create a static member that is a pointer to the current class, restrict the use of con- structors to create the class by making them private, and provide a public static member function that clients can use to access the single, static instance.
-
-    - implement it using pointers and references
-    - how to make it thread safe
-
-
-- Abstract Base Class (ABC) - is a class that can't be instanstiated & acts as an interface.
-
-
-    Here is a quick list of rules regarding abstract classes and pure virtual functions. A class is abstract if:
-    - It declares at least one pure virtual function
-    - It inherits, but does not implement, at least one pure virtual function
-    abstract class cannot be instantiated. 
-
-    However, with an abstract class you can:
-    - Have data members
-    - Have nonvirtual member functions
-    - Provide implementations for pure virtual functions Do most of the things you can in an ordinary class
-    In other words, you can do just about everything you can do with an ordinary class except instantiate it.
-
-- Diamond Problem
-- class templates
-- calling a specific version of virtual function
-
-
-
-- `SOLID`
-    - Avoiding tight coupling is the key!
-
-    - SINGLE RESPONSIBILITY PRINCIPLE (SRP)
-        - There should never be more than one reason for a class to change. 
-        - *Just because you can, doesn't mean you should. stay away swiss army knife*
-        - #PROTIPS
-            * Split big classes
-            * use layers
-            * __Avoid god classes__
-            * write straightforward comments
-
-    - OPEN-CLOSED PRINCIPLE(OCP)    
-        - Software entities should be open for extension, but closed for modification.
-        - *Open chest surgery is not needed when putting on a coat* 
-        - #PROTIPS
-            * Make all member variables private
-            * No global variables, ever
-            * __Avoid setters__ (as much as possible)
-
-    - LISKOV SUBSTITUTION PRINCIPLE (LSP)
-        - Objects in a program should be replaceable with instances of  their subtypes without altering the correctness of the program. 
-        - *If it looks like a duck, quacks like a duck but needs Batteries - You probably have the wrong Abstraction*    
-
-    - INTERFACE SEGREGATION PRINCIPLE (ISP)
-        - Many client-specific interfaces are better than one general-purpose interface. 
-        - *USB - where do you want to plug this in?*
-    
-    - DEEPENDENCY INVERSION PRINCIPLE (DIP)
-        - High level modules should not depend upon low level modules. Both should depend upon abstractions.
-        - Abstractions should not depend upon details. Details should depend upon abstractions. 
-        - *Would you solder a lamp directly to the electrical wiring in a wall?*
-
-#### Strings
- - A generic version that suits wstring & string using basic_string<T> template
- - Padding, trimming
- - to print a vector<string>
- - differentiate vector<char> vs string
- - tokenize a string, strtok implementation
- - locale, use_facet
- - unicode 
- - handle localization of strings
-
-
-#### Streams
-- copy(first,last,ostream_iterator<int> (cout," "));
-- adding ostream, operator<< as a friend class
-- sstream,fstream
-
-
-
-#### File Handling
-
-
-#### Parsing - JSON, XML, text, csv
-
-#### Pointers Vs References - use cases & syntaxes
-    - Const pointer, pointer to a const
-    - function pointers
-    - void pointer
-    - “C++’s most vexing parse
-
-#### Smart pointers
-    - unique_ptr.swap
-    - shared_ptr
-    - write your own shared ptr, unique_ptr
-
-#### Error Handling & Exceptions
-
-#### Concurrency
+//////////////////////////////////////////////
 - *High-Level Interface: async()*
     - `async()` provides an interface to let a piece of functionality, a callable object run in the background as a separate thread, if possible.  
     - Class `future<>` allows you to wait for the thread to be finished and provides access to its outcome: return value or exception, if any. 
@@ -453,6 +211,207 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - `native_handle`  - a member function of std::thread that can be used for accessing to the platform’s underlying threading API (usually POSIX threads or Windows threads). setting its priority or core affinity
 - void futures - use case: creating a suspended thread
 - Both `std::thread` objects and `future` objects can be thought of as handles to system threads.
+----
+## Chrono
+
+
+----
+##
+-----
+### STL - Containers, Algo, Iter
+> create a table form for insert, delete operations for all the containers
+insertion into containers - multiple ways 
+- list :
+    - insertion: push_back, push_front, insert
+    - deletion : erase,remove, remove_if
+        - Remove elements from a container  - use erase() member function of the container
+
+    `remove` doesn’t actually remove anything. __It moves everything that isn’t equal to the value you specify to the beginning of the sequence, and returns an iterator that refers to the first element following them.__ Then, it is up to you to actually call erase on the container to delete the objects between [p, end), where p is the iterator returned by remove.
+    
+
+    Use `remove_if` -  if you want to remove elements that satisfy some predicate, and not simply those equal to some value
+
+    Finally, you may want to leave the original sequence alone (maybe it’s const) and copy the results minus some elements into a new sequence.use `remove_copy` and `remove_copy_if`, which work the same way as remove and remove_if, except that there is also an output iterator you pass in where the resulting data is supposed to go.
+
+    ```cpp
+    std::remove_copy(str.begin(), str.end(),std::ostream_iterator<char>(std::cout), ' ');
+    // removes the blank spaces
+    ```
+
+    - iteration & display using copy + ostream
+
+
+- set:
+    - change the default sorting, compartor
+    
+
+- map
+
+
+- deque
+
+- vector
+    - storing custom datatype 
+    - storing pointers
+    - deleting elements
+    - emplace_back vs insert
+    
+- rope 
+
+- STL containers of pointers
+
+- use `empty()` function to test a container for emptiness. Don't compare begin==end or size==0
+
+- `back_inserter` - A back_inserter is a class defined in \<iterator\> that provides a convenient way to create an output iterator that calls push_back on a sequence every time you assign a value to it. 
+- `inserter` - is a function template defined in \<iterator\> that takes a container and an iterator and returns an output iterator that calls insert on its first argument when values are assigned to it. 
+
+- `equal` to compare two sequences for equality
+
+
+- `transform` or `for_each` - used for transforming elements in sequence
+- `search`
+- `accumulate` - function from the \<numeric\> header to compute the sum, and then divide by the size to get the mean.
+-  `merge` - merge merges two sorted sequences and places the result into a third
+    Both sequences must be sorted (or the output will be garbage), and neither is modified by merge
+- `inplace_merge` - if you have two sequences that are contiguous (i.e., they are parts of the same sequence), and they are sorted, and you want the entire sequence sorted, you can use inplace_merge instead of a sort algorithm. The advantage is that inplace_ merge can run in linear time if there is enough additional memory available. If there isn’t, it runs in n log n, which is the average complexity of sort anyway.
+- to know how or where two sequences differ, you can use `lexicographical_compare` or `mismatch`.
+
+- types of sortings
+- `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
+- `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
+
+ `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
+
+`nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
+
+- `partition`
+- `bind2nd`
+- set opertations can be called the set operations on any sequence, not    just sets.`set_union, set_difference, set_intersection, set_symmetric_difference` - If a and b are sets symmetric difference is (a-b) U (b-a) - set of all elements that appear in one set but not the other
+- generator functions for filling containers
+- nullary functor
+- `unique_copy`, `copy` 
+```cpp
+ copy(v.begin(), v.end(), ostream_iterator<string>(cout, ", "));
+```
+- write your own copy_if
+- `random_shuffle`
+- `std::function` - Class template std::function is a general-purpose polymorphic function wrapper. 
+   Instances of std::function can store, copy, and invoke any Callable target -- functions, lambda expressions, bind expressions, or other function objects, as well as pointers to member functions and pointers to data members. The stored callable object is called the target of std::function. If a std::function contains no target, it is called empty. Invoking the target of an empty std::function results in std::bad_function_call exception being thrown.
+   std::function satisfies the requirements of CopyConstructible and CopyAssignable.
+
+-  types of iterators - 
+    * An `input iterator` supports advancing forward with p++ or ++p, and dereferencing with *p. __You get back an rvalue when you dereference though__. Input iterators are used for things like streams, where dereferencing an input iterator means pulling the next element off the stream, __so you can only read a particular element once__.
+    
+    * An `output iterator` supports advancing forward with p++ or ++p, and dereferenc- ing with *p. It’s different from an input iterator though, in that you can’t read from one, __you can only write to it—and only write to an element once.__ __Also unlike an input iterator, you get back an lvalue and not an rvalue, so you can assign to it but not read from it.__
+    
+    A `forward iterator` merges the functionality of an input iterator and an output iterator: it supports ++p and p++, and you can treat *p as an rvalue or an lvalue. You can use a forward iterator anywhere you need an input or an output iterator, with the added benefit that __you can read from or write to a dereferenced forward iterator as many times as you see fit.__
+    
+    As the name implies, a `bidirectional iterator` goes forward and backward. __It is a forward iterator that adds the ability to go backward using --p or p--.__
+    
+    A `random-access iterator` does everything a bidirectional iterator does, but it also __supports pointer-like operations__. You can use p[n] to access the element that is n positions after p in the sequence, or you can add to or subtract from p with +, +=, -, or -= to move the iterator forward some number of elements in constant time. You can also compare two iterators p1 and p2 with <, >, <=, or >= to determine their relative order (as long as they both point to the same sequence).
+
+    other kinds of iterators are `streamiterators` - A stream iterator is an iterator that is based on a stream instead of a range of elements in some container,and streamiterators allow you to treat streaminput as an input iterator ,`streambufferiterators`,and `rawstorageiterators`
+    `const`,`reverse`
+
+- `distance` - count no.of elements when only iterators are given
+- `max_element` & `min_element` - return iterators not values
+- `valarray` -   can be used as a numerical vector especially those on high-performance machines, can apply specialized vector optimizations to it. 
+   valarray provides numerous overloaded operators specifically for working with numerical vectors. 
+   These operators provide such functionality as vector addition and scalar multiplication.
+   The valarray template can also be used with the standard algorithms like a C-style array.
+
+- `inner_product` - computing the dot product. It can also be used for computing distance between two vectors or compute the norm of a vector
+- `std::plus`
+- `std::iterator_traits`
+-----
+### OOAD
+
+- Effects of making ctor & dtor as private
+- this pointer 
+- vtables & vptr
+- usage of ' =default' & ' =delete' 
+- deep copy & shallow copy
+- disallowing copy ctor
+- copy ctor & assignment overload functions with rvalue references
+- move semantics
+- override, final keywords usage
+- pure virtual methods - Interfaces
+- virtual destructor uses, why not virtual ctor
+- friend class
+- friend operators
+- benefits of using an initializer list becomes more apparent when you have class or reference member variables, or when you are trying to deal with exceptions effectively.
+    If an object is constructed in the initializer list, and that object throws an exception during construction, the runtime environment destroys all other previ- ously constructed objects in the list, and the exception continues to the caller of the constructor. On the other hand, if you assign the argument in the body of the con- structor, then you have to handle the exception with a try/catch block.
+
+- factory pattern - using a function to create an object
+
+- resource acquisition is initialization (RAII)
+- static vs global
+    If you declare a member variable static, only one of it will ever be constructed, regardless of the number of objects of that class that are instantiated. Similarly, if you declare a variable static in a function, it is constructed at most once and retains its value from one function call to another. 
+    you should not put the definition in the header file. If you do, storage will be allocated in each implementation file that includes the header file, and either you will get a linker error or, worse, there will be several instances of this member variable in memory. This is not what you want if you need a static member variable.
+
+
+- Use dynamic_cast operator to query the relationship between two types.
+    The only requirement is that the object argument is a polymorphic type, which means that it has at least one virtual function.
+
+- Singleton: 
+    Create a static member that is a pointer to the current class, restrict the use of con- structors to create the class by making them private, and provide a public static member function that clients can use to access the single, static instance.
+
+    - implement it using pointers and references
+    - how to make it thread safe
+
+
+- Abstract Base Class (ABC) - is a class that can't be instanstiated & acts as an interface.
+
+
+    Here is a quick list of rules regarding abstract classes and pure virtual functions. A class is abstract if:
+    - It declares at least one pure virtual function
+    - It inherits, but does not implement, at least one pure virtual function
+    abstract class cannot be instantiated. 
+
+    However, with an abstract class you can:
+    - Have data members
+    - Have nonvirtual member functions
+    - Provide implementations for pure virtual functions Do most of the things you can in an ordinary class
+    In other words, you can do just about everything you can do with an ordinary class except instantiate it.
+
+- Diamond Problem
+- class templates
+- calling a specific version of virtual function
+
+-----
+### Design
+- `SOLID`
+    - Avoiding tight coupling is the key!
+
+    - SINGLE RESPONSIBILITY PRINCIPLE (SRP)
+        - There should never be more than one reason for a class to change. 
+        - *Just because you can, doesn't mean you should. stay away swiss army knife*
+        - #PROTIPS
+            * Split big classes
+            * use layers
+            * __Avoid god classes__
+            * write straightforward comments
+
+    - OPEN-CLOSED PRINCIPLE(OCP)    
+        - Software entities should be open for extension, but closed for modification.
+        - *Open chest surgery is not needed when putting on a coat* 
+        - #PROTIPS
+            * Make all member variables private
+            * No global variables, ever
+            * __Avoid setters__ (as much as possible)
+
+    - LISKOV SUBSTITUTION PRINCIPLE (LSP)
+        - Objects in a program should be replaceable with instances of  their subtypes without altering the correctness of the program. 
+        - *If it looks like a duck, quacks like a duck but needs Batteries - You probably have the wrong Abstraction*    
+
+    - INTERFACE SEGREGATION PRINCIPLE (ISP)
+        - Many client-specific interfaces are better than one general-purpose interface. 
+        - *USB - where do you want to plug this in?*
+    
+    - DEEPENDENCY INVERSION PRINCIPLE (DIP)
+        - High level modules should not depend upon low level modules. Both should depend upon abstractions.
+        - Abstractions should not depend upon details. Details should depend upon abstractions. 
+        - *Would you solder a lamp directly to the electrical wiring in a wall?*
 
 #### DesignPattern
 - Singleton(threadSafe)
@@ -460,35 +419,126 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - Factories
 - 
 
-#### Numerical Methods
+-----
+### Strings
+ - A generic version that suits wstring & string using basic_string<T> template
+ - Padding, trimming
+ - to print a vector<string>
+ - differentiate vector<char> vs string
+ - tokenize a string, strtok implementation
+ - locale, use_facet
+ - unicode 
+ - handle localization of strings
+
+-----
+
+### Streams
+- copy(first,last,ostream_iterator<int> (cout," "));
+- adding ostream, operator<< as a friend class
+- sstream,fstream
+-----
+
+
+### File Handling
+
+-----
+### Parsing - JSON, XML, text, csv
+-----
+### Pointers Vs References - use cases & syntaxes
+    - Const pointer, pointer to a const
+    - function pointers
+    - void pointer
+    - “C++’s most vexing parse
+
+### Smart pointers
+    - unique_ptr.swap
+    - shared_ptr
+    - write your own shared ptr, unique_ptr
+
+### Error Handling & Exceptions
+
+
+
+
+
+### Numerical Methods
 - `std::default_random_engine`
 - `std::uniform_int_distribution`
 
-#### Modern C++
-- using static_cast to fix narrowing conversion
-- uniform initialization
-- Initializing Objects with Initializer Lists - std::initializer_list
-- type deduction - auto keyword, typeid()
-- to find the type : use of "./bin/executable | c++filt -t"
-- decltype keyword  
-- T (auto return type)
-- constexpr - usage to limit the size of array
-- lambda
-- using - used for declaration
-- auto&& 
-- closure 
-- reference capture, capture by value
-- mutable keyword
-- C++11 Vs C++14 (list of new features)
-- namespace chrono
-- namespace literals
-- duration_cast, difference between start & end time
-- std::noshowbase, dec, showbase
-- lvalue & rvalue
-- move ctor
-- reinterpret_cast
+### Modern C++
 
-##### Exception Handling
+#### Deducing Types
+1. ___template type deduction___
+~~~cpp
+template<typename T>
+void f(ParamType param); 
+
+f(expr); 
+//In the call to f, compilers use expr to deduce types for T and ParamType.
+~~~
+Three cases of Template type deduction based on the characteristics of ParamType, the type specifier for param in the general function template.
+1. The type specifier is a pointer or reference, but not a universal reference.
+2. The type specifier is a universal reference.
+3. The type specifier is neither a pointer nor a reference
+
+- During template type deduction, arguments that are references are treated as non-references, i.e., their reference-ness is ignored.
+- When deducing types for universal reference parameters, lvalue arguments get special treatment.
+- When deducing types for by-value parameters, const and/or volatile arguments are treated as non-const and non-volatile.
+- During template type deduction, arguments that are array or function names decay to pointers, unless they’re used to initialize references.
+
+2. ___auto type deduction___
+~~~cpp
+auto x1 = 27; // type is int, value is 27 
+auto x2(27); // ditto
+auto x3 = { 27 }; // type is std::initializer_list<int> & value is { 27 }
+auto x4{ 27 }; // ditto
+~~~
+* auto type deduction is usually the same as template type deduction, but auto type deduction assumes that a braced initializer represents a std::initializer_list, and template type deduction doesn’t.
+* auto in a function return type or a lambda parameter implies template type deduction, not auto type deduction.
+
+* auto variables must be initialized, are generally immune to type mismatches that can lead to portability or efficiency problems, can ease the process of refactoring, and typically require less typing than variables with explicitly specified types.
+
+* When `auto` may not be used: 'Invisible' proxy types can cause auto to deduce the "wrong" type for an initializing expression. The explicitly typed initializer idiom forces auto to deduce the type you want it to have.
+
+3. ___`decltype`___
+* decltype almost always yields the type of a variable or expression without any modifications.
+* For lvalue expressions of type T other than names, decltype always reports a type of T&.
+* C++14 supports decltype(auto), which, like auto, deduces a type from its initializer, but it performs the type deduction using the decltype rules.
+
+4. ___how to view deduced types___
+* opertor `typeid` takes an expression or a type and returns a reference to an object of `type_info` or a subclass of it (which is implementation defined)This is because typeid returns a reference to a static object, so if you call it on two objects that are the same type, you will get two references to the same thing, which is why the equality test returns true.
+* std::type_info::name 
+* to find the type : use of "./bin/executable | c++filt -t"
+----
+
+* using static_cast to fix narrowing conversion
+* uniform initialization
+* Initializing Objects with Initializer Lists - std::initializer_list
+
+
+* T (auto return type)
+* constexpr - usage to limit the size of array
+    - declaring a function `constexpr` makes its result available during compilation.
+* lambda
+* using - used for declaration
+* auto&& 
+* closure
+    - Function Objects created through Lambda expressions are known as closures 
+* reference capture, capture by value
+* mutable keyword
+* C++11 Vs C++14 (list of new features)
+* namespace chrono
+* namespace literals
+* duration_cast, difference between start & end time
+* std::noshowbase, dec, showbase
+
+* lvalue & rvalue
+
+
+* move ctor
+* reinterpret_cast
+
+#### Exception Handling
 - You can throw or catch any C++ type that lives up to some simple requirements, namely that it has a valid copy constructor and destructor.
 (“trying” something, “throwing” an exception, and subsequently “catching” it)
 - throw `domain_error`,  `std::runtime_error`
@@ -497,11 +547,11 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - The ellipsis in the catch handler means that anything that is thrown will be caught. 
 
 
-##### C vs C++
+#### C vs C++
 - size of an array is decided at compile time in C & at runtime in C++
 
 
-##### general questions
+#### general questions
 - partial template specialization
 - overloading vs templates - pros and cons
 - templates with variable no.of arguments
@@ -528,12 +578,20 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 
 
 
-##### Util functions
+#### Util functions
 - tokenizing - convert a string to vector<string>
 - 2-D matix class & it's methods to fill
 - Matrix -  Multiplication, Addition, Transpose, Inverse, Identity.
 - Given the product the matrix - find the missing elements in the input matrices
-- 
+
+### Comparison of sorting algorithms
+
+| Sort  |  key words | Complexity  |   |   |
+|---|---|---|---|---|
+| Merge  |  Divide, Conquer & Combine |   |   |   |
+| Quick   |  Divide, Conquer & Combine, pivot, partition |  in place |   |   |
+| Insertion  |   |   |   |   |
+| Bubble  |   |   |   |   |
 
 
 
@@ -612,7 +670,7 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 
 -----
 
-##### Tips to run this Project on windows using CodeBlocks
+#### Tips to run this Project on windows using CodeBlocks
 1. Install the following 
     - CMake, 
     - MinGW(posix - for std::thread), 

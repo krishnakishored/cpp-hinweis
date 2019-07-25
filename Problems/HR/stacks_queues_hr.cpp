@@ -13,14 +13,16 @@
 #include <vector>
 #endif
 
-
 #ifndef STACK
 #define STACK
 #include <stack>
 #endif
 
-#include<limits>
-#include<algorithm>
+#include <unordered_set>
+#include <unordered_map>
+
+#include <limits>
+#include <algorithm>
 
 using std::cin;
 using std::cout;
@@ -28,10 +30,10 @@ using std::endl;
 using std::min;
 using std::numeric_limits;
 using std::ofstream;
+using std::stack;
 using std::streamsize;
 using std::string;
 using std::vector;
-using std::stack;
 
 /*
     1. https://www.hackerrank.com/challenges/balanced-brackets/problem?h_l=interview&playlist_slugs%5B%5D=interview-preparation-kit&playlist_slugs%5B%5D=stacks-queues
@@ -44,11 +46,11 @@ using std::stack;
 
 vector<string> split_string(string);
 
-
 // Complete the poisonousPlants function below.
-int poisonousPlants(vector<int> p) {
+int poisonousPlants(vector<int> p)
+{
 
-return 0;
+    return 0;
 }
 
 int main_poisonousPlants()
@@ -66,7 +68,8 @@ int main_poisonousPlants()
 
     vector<int> p(n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         int p_item = stoi(p_temp[i]);
 
         p[i] = p_item;
@@ -81,10 +84,10 @@ int main_poisonousPlants()
     return 0;
 }
 
-
 // Complete the minimumMoves function below.
-int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goalY) {
-/*
+int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goalY)
+{
+    /*
 3
 .X.
 .X.
@@ -93,8 +96,7 @@ int minimumMoves(vector<string> grid, int startX, int startY, int goalX, int goa
 
 o/p: 3
 */
-return 0;
-
+    return 0;
 }
 
 int main_minimumMoves()
@@ -107,7 +109,8 @@ int main_minimumMoves()
 
     vector<string> grid(n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         string grid_item;
         getline(cin, grid_item);
 
@@ -136,10 +139,9 @@ int main_minimumMoves()
     return 0;
 }
 
-
-
 // Complete the riddle function below.
-vector<long> riddle(vector<long> arr) {
+vector<long> riddle(vector<long> arr)
+{
     // complete this function
     /*
     4
@@ -147,7 +149,7 @@ vector<long> riddle(vector<long> arr) {
 
     o/p: 12 2 1 1
     */
-   vector<long> v{0};
+    vector<long> v{0};
 
     return v;
 }
@@ -167,7 +169,8 @@ int main_minMax_riddle()
 
     vector<long> arr(n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         long arr_item = stol(arr_temp[i]);
 
         arr[i] = arr_item;
@@ -175,10 +178,12 @@ int main_minMax_riddle()
 
     vector<long> res = riddle(arr);
 
-    for (int i = 0; i < res.size(); i++) {
+    for (int i = 0; i < res.size(); i++)
+    {
         fout << res[i];
 
-        if (i != res.size() - 1) {
+        if (i != res.size() - 1)
+        {
             fout << " ";
         }
     }
@@ -190,12 +195,9 @@ int main_minMax_riddle()
     return 0;
 }
 
-
-
-
-
 // Complete the largestRectangle function below.
-long largestRectangle(vector<int> h) {
+long largestRectangle(vector<int> h)
+{
     /*
     5
     1 2 3 4 5
@@ -203,7 +205,7 @@ long largestRectangle(vector<int> h) {
     */
     long z{0};
 
- return z;
+    return z;
 }
 
 int main_largestRectangle()
@@ -221,7 +223,8 @@ int main_largestRectangle()
 
     vector<int> h(n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         int h_item = stoi(h_temp[i]);
 
         h[i] = h_item;
@@ -236,25 +239,24 @@ int main_largestRectangle()
     return 0;
 }
 
+class MyQueue
+{
 
+public:
+    stack<int> stack_newest_on_top, stack_oldest_on_top;
+    void push(int x)
+    {
+    }
 
-class MyQueue {
+    void pop()
+    {
+    }
 
-    public:
-        stack<int> stack_newest_on_top, stack_oldest_on_top;
-        void push(int x) {
-
-        }
-
-        void pop() {
-
-        }
-
-        int front() {
-            return 0;
-        }
+    int front()
+    {
+        return 0;
+    }
 };
-
 
 int main_MyQueue()
 {
@@ -279,16 +281,20 @@ int main_MyQueue()
     int q, type, x;
     cin >> q;
 
-    for(int i = 0; i < q; i++) {
+    for (int i = 0; i < q; i++)
+    {
         cin >> type;
-        if(type == 1) {
+        if (type == 1)
+        {
             cin >> x;
             q1.push(x);
         }
-        else if(type == 2) {
+        else if (type == 2)
+        {
             q1.pop();
         }
-        else cout << q1.front() << endl;
+        else
+            cout << q1.front() << endl;
     }
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */
     return 0;
@@ -296,9 +302,44 @@ int main_MyQueue()
 
 
 
+string isBalanced_2(string s) {
+    stack<char> st;  
+    
+    for (auto c: s) {
+        switch (c) {
+            case '{':
+            case '(':
+            case '[':
+                st.push(c);
+                break;
+            case '}':
+                if (st.empty() || (st.top() != '{')) {
+                    return "NO";
+                }
+                st.pop();
+                break;
+            case ')':
+                if (st.empty() || (st.top() != '(')) {
+                    return "NO";
+                }
+                st.pop();
+                break;
+            case ']':
+                if (st.empty() || (st.top() != '[')) {
+                    return "NO";
+                }
+                st.pop();
+                break;
+        }
+    }    
+    return st.empty() ? "YES" : "NO";
+}
+
+
 // Complete the isBalanced function below.
-string isBalanced(string s) {
-/*
+string isBalanced(string s)
+{
+    /*
 3
 {[()]}
 {[(])}
@@ -308,23 +349,49 @@ o/p: YES
       NO
      YES
 */
-return " YES ";
+    
+    std::unordered_set<char> open{'[', '(', '{'};
+    std::unordered_map<char, char> match({{'}', '{'},{']','[',},{')','(',}});
+    std::stack<char> container;
+
+    for (auto letter : s)
+    {
+        if (open.find(letter) != open.end())
+        {
+            container.push(letter);
+        }
+        else
+        {
+            if(container.empty()|| container.top() != match[letter])
+            {
+                return "NO";
+            }
+            else
+            {
+                container.pop();
+            }
+        }
+    }
+    return (container.size() > 0) ? "NO" : "YES";
 }
 
 int main_BalancedBrackets()
 {
-    ofstream fout(getenv("OUTPUT_PATH"));
+    // ofstream fout(getenv("OUTPUT_PATH"));
+    
+    std::ofstream fout("./DataFiles/stringOutput.txt");
 
     int t;
     cin >> t;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    for (int t_itr = 0; t_itr < t; t_itr++) {
+    for (int t_itr = 0; t_itr < t; t_itr++)
+    {
         string s;
         getline(cin, s);
 
-        string result = isBalanced(s);
-
+        // string result = isBalanced(s);
+        string result = isBalanced_2(s);
         fout << result << "\n";
     }
 
@@ -335,15 +402,14 @@ int main_BalancedBrackets()
 
 int main()
 {
-    main_poisonousPlants();
-    main_minimumMoves();
-    main_minMax_riddle();
-    main_largestRectangle();
-    main_MyQueue();
+    // main_poisonousPlants();
+    // main_minimumMoves();
+    // main_minMax_riddle();
+    // main_largestRectangle();
+    main_BalancedBrackets();
+    // main_MyQueue();
     return 0;
 }
-
-
 
 vector<string> split_string(string input_string)
 {
