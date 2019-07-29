@@ -19,6 +19,9 @@ add_executable(strings_hr)
 target_sources(strings_hr PRIVATE strings_hr.cpp)
 target_compile_features(strings_hr PRIVATE cxx_std_14) 
 
+add_executable(searching_hr)
+target_sources(searching_hr PRIVATE searching_hr.cpp)
+target_compile_features(searching_hr PRIVATE cxx_std_14) 
 
 add_executable(stacks_queues_hr)
 target_sources(stacks_queues_hr PRIVATE stacks_queues_hr.cpp)
