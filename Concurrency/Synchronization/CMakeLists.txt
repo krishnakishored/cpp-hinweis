@@ -37,3 +37,17 @@ target_compile_features(synchronize_5 PRIVATE cxx_std_14)
 add_executable(synchronize_6)
 target_sources(synchronize_6 PRIVATE synchronize_6.cpp)
 target_compile_features(synchronize_6 PRIVATE cxx_std_14) 
+
+
+add_executable(threads_boqian_1)
+target_sources(threads_boqian_1 PRIVATE threads_boqian_1.cpp)
+target_compile_features(threads_boqian_1 PRIVATE cxx_std_14) 
+
+
+# add_executable(threads_boqian_2.cpp)
+# target_sources(threads_boqian_2.cpp PRIVATE threads_boqian_2.cpp)
+# target_compile_features(threads_boqian_2 PRIVATE cxx_std_14)
+
+# add_executable(threads_boqian_3.cpp)
+# target_sources(threads_boqian_3.cpp PRIVATE threads_boqian_3.cpp)
+# target_compile_features(threads_boqian_3 PRIVATE cxx_std_14)

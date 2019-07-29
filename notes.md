@@ -1,7 +1,67 @@
-
+ 
 ----
 ### Concurrency
-1. hardware_concurrency
+
+------
+#### Process vs Thread
+* Two Programming models for concurrent programming
+    1. Multiprocessing
+        - Talk to each other through `inter process communication`: Files, Pipes, Message Queues ..
+        
+    2. Multithreading
+        - pros: 
+            - Fast to start
+            - Low overhead
+            - Communicating through `shared memory`
+        - Cons         
+            - Difficult to implement
+            - can't run on distributed system
+
+#### Creating Threads
+* By default the parameter to a thread are always _passed by value_
+  - To pass a parameter reference :  `std::ref(param)` // this might create data race problem as mem is shared between threads
+  - `std::move(s)` // safe and efficient
+
+* A thread object cannot be copied . But it can be moved.  Like fstream, unique_ptr, etc.
+~~~cpp
+    //Case 1:
+    std::thread t1(call_from_thread);
+    std::thread t2 = move(t1);  // t2 become the owner of the thread
+    t2.join();
+
+    //Case 2:
+    thread f() 
+    {
+        // ...
+        return std::thread(call_from_thread);   // move semantics 
+    }
+
+    //Case 3:
+    void f(std::thread t);
+    int main() 
+    {
+        f(std::thread(call_from_thread));  // move semantics
+        //...
+    }
+~~~
+
+* a thread can only be moved but not copied
+  ~~~cpp
+    std::thread t2 = t1; // error
+    std::thread t2 = std::move(t1); // it works
+  ~~~
+
+* `this_thread::get_id()` or `t1.get_id()` prints thread IDs provided either by the thread object or inside a thread
+
+* Oversubscription - when there are more threads running than the available cpu cores, it creates a lot contact switching & in turn degrades the performance use `std::thread::hardware_concurrency` to find out
+
+#### Date Race & Mutex
+
+
+
+
+------
+1. 
 2. hyperthreading
 3. maximum number of threads
     Computation intensive 
@@ -82,7 +142,7 @@
 - *Low-Level Interface: threads & promises()*
     - To start a thread, you simply have to declare an object of class std::thread and pass the desired task as initial argument, and then either wait for its end or detach it.
     - If an exception occurs that is not caught inside the thread, the program immediately aborts, call- ing std::terminate(). To pass exceptions to a context outside the thread exception_ptrs have to be used.
-    - `this_thread::get_id()` prints thread IDs provided either by the thread object or inside a thread
+    
 
 - *Promises
     - You can pass parameters (and handle exceptions) between threads by simply passing them as arguments. And if you need a result, you can pass return arguments by reference, just as described for async() . Another mechanism to pass result values and exceptions as out- comes of a thread: class std::promise. 
@@ -130,8 +190,7 @@
     * Don’t pass pointers and references to protected data outside the scope of the lock, whether by returning them from a function, storing them in externally visible memory, or passing them as arguments to user-supplied functions.
 - hierarchical_mutex
 - reference_wrapper
- 
-- std::ref
+
 - threadsafe singleton
 - `std::unique_lock` provides a bit more flexibility than std::lock_guard by relaxing the invariants; a std::unique_lock instance doesn’t always own the mutex that it’s associated with. 
 First off, just as you can pass std::adopt_lock as a second argument to the constructor to have the lock object manage the lock on a mutex, you can also pass `std::defer_lock` as the second argument to indicate that the mutex should remain unlocked on construction. The lock can then be acquired later by calling lock() on the std::unique_lock object (not the mutex) or by passing the std:: unique_lock object itself to std::lock().
@@ -516,6 +575,20 @@ insertion into containers - multiple ways
     Widget w2(); // most vexing parse! declares a function  named w2 that returns a Widget!
     Widget w3{}; // calls Widget ctor with no args
     //the most vexing parse most frequently afflicts developers when they want to default-construct an object, but inadvertently end up declaring a function instead
+
+    class Fctor{
+        public:
+            void operator()(){
+                for(){..}
+            }
+    };
+
+    Fctor fct;
+    std::thread t1(fct); //ok 
+
+    std::thread t2(Fctor()); // most vexing parse
+    std::thread t2((Fctor())); // with extra pair of () .. this works as expected.
+
     ~~~
     * During constructor overload resolution, braced initializers are matched to std::initializer_list parameters if at all possible, even if other constructors offer seemingly better matches.
     * An example of where the choice between parentheses and braces can make a significant difference is creating a std::vector<numeric type> with two arguments.
