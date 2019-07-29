@@ -128,21 +128,40 @@ int main_arrayManipulation()
 // Complete the minimumSwaps function below.
 int minimumSwaps(vector<int> arr) 
 {
+    /*
 
-/*
+    7
+    1 3 5 2 4 6 7
+    o/p: 3
+    */
+    
+    int temp = 0;
+    int swap_count = 0;
 
-7
-1 3 5 2 4 6 7
-o/p: 3
-*/
+    //using selection_sort approach
 
-return 0;
+    // std::vector<int>::iterator result = std::min_element(std::begin(arr), std::end(arr));
+    // std::cout << "min element at: " << std::distance(std::begin(arr), result);
+    std::vector<int>::iterator it = arr.begin();
+    int min_index = 0;
+    for(;it!=arr.end();it++){
+        min_index = std::distance(std::begin(arr),std::min_element(it, std::end(arr)));
+        //swap
+        if(*it>arr[min_index])
+        {
+            temp = *it;
+            *it = arr[min_index];
+            arr[min_index] = temp;
+            swap_count++;
+        }
+    }
+    return swap_count;
 }
 
 int main_minimumSwaps()
 {
-    ofstream fout(getenv("OUTPUT_PATH"));
-
+    //ofstream fout(getenv("OUTPUT_PATH"));
+    std::ofstream fout("./DataFiles/stringOutput.txt");
     int n;
     cin >> n;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -413,8 +432,8 @@ vector<string> split_string(string input_string)
 
 int main()
 {
-   main_arrayManipulation();
-//    main_minimumSwaps();
+//    main_arrayManipulation();
+   main_minimumSwaps();
     // main_minimumBribes();
     // main_rotLeft();
 //    main_hourglassSum();

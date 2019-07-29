@@ -246,15 +246,50 @@ public:
     stack<int> stack_newest_on_top, stack_oldest_on_top;
     void push(int x)
     {
+        stack_newest_on_top.push(x);
+
     }
 
     void pop()
     {
+        int elem = 0;
+        if (stack_newest_on_top.empty() && stack_oldest_on_top.empty())
+        {
+            exit(0);
+        }
+        else if (stack_oldest_on_top.empty())
+        {
+            while (!stack_newest_on_top.empty())
+            {
+                elem = stack_newest_on_top.top();
+                stack_oldest_on_top.push(elem);
+                stack_newest_on_top.pop();
+            }
+            stack_oldest_on_top.pop();
+        }
+        else
+        {
+            stack_oldest_on_top.pop();
+        }
     }
 
     int front()
     {
-        return 0;
+        int elem = 0;
+        if (stack_newest_on_top.empty() && stack_oldest_on_top.empty())
+        {
+            exit(0);
+        }
+        else if (stack_oldest_on_top.empty())
+        {
+            while (!stack_newest_on_top.empty())
+            {
+                elem = stack_newest_on_top.top();
+                stack_oldest_on_top.push(elem);
+                stack_newest_on_top.pop();
+            }
+        }
+        return stack_oldest_on_top.top();
     }
 };
 
@@ -406,8 +441,8 @@ int main()
     // main_minimumMoves();
     // main_minMax_riddle();
     // main_largestRectangle();
-    main_BalancedBrackets();
-    // main_MyQueue();
+    // main_BalancedBrackets();
+    main_MyQueue();
     return 0;
 }
 
