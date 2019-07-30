@@ -1,8 +1,235 @@
+## Modern C++  
+----
+#### Deducing Types
+1. ___template type deduction___
+    ~~~cpp
+    template<typename T>
+    void f(ParamType param); 
+
+    f(expr); 
+    //In the call to f, compilers use expr to deduce types for T and ParamType.
+    ~~~
+    Three cases of Template type deduction based on the characteristics of ParamType, the type specifier for param in the general function template.
+    1. The type specifier is a pointer or reference, but not a universal reference.
+    2. The type specifier is a universal reference.
+    3. The type specifier is neither a pointer nor a reference
+
+    - During template type deduction, arguments that are references are treated as non-references, i.e., their reference-ness is ignored.
+    - When deducing types for universal reference parameters, lvalue arguments get special treatment.
+    - When deducing types for by-value parameters, const and/or volatile arguments are treated as non-const and non-volatile.
+    - During template type deduction, arguments that are array or function names decay to pointers, unless they’re used to initialize references.
+
+2. ___auto type deduction___
+    ~~~cpp
+    auto x1 = 27; // type is int, value is 27 
+    auto x2(27); // ditto
+    auto x3 = { 27 }; // type is std::initializer_list<int> & value is { 27 }
+    auto x4{ 27 }; // ditto
+    ~~~
+    * auto type deduction is usually the same as template type deduction, but auto type deduction assumes that 
+      a braced initializer represents a std::initializer_list, and template type deduction doesn’t.
+    * auto in a function return type or a lambda parameter implies template type deduction, not auto type deduction.
+    * auto variables must be initialized, are generally immune to type mismatches that can lead to portability or efficiency problems, 
+      can ease the process of refactoring, and typically require less typing than variables with explicitly specified types.
+    * When `auto` may not be used: 'Invisible' proxy types can cause auto to deduce the "wrong" type for an initializing expression. 
+      The explicitly typed initializer idiom forces auto to deduce the type you want it to have.
+
+3. ___`decltype`___
+    * decltype almost always yields the type of a variable or expression without any modifications.
+    * For lvalue expressions of type T other than names, decltype always reports a type of T&.
+    * C++14 supports decltype(auto), which, like auto, deduces a type from its initializer, but it performs the type deduction using the decltype rules.
+
+4. ___how to view deduced types___
+    * opertor `typeid` takes an expression or a type and returns a reference to an object of `type_info` or a subclass of it 
+    (which is implementation defined) This is because typeid returns a reference to a static object, 
+    so if you call it on two objects that are the same type, you will get two references to the same thing, which is why the equality test returns true.
+    * std::type_info::name 
+    * to find the type : use of "`./bin/executable | c++filt -t`"
+
+----
+### New features 
+1. ___uniform initialization___ ,  () vs {}
+    * Braced initialization is the most widely usable initialization syntax, it prevents narrowing conversions, and it’s immune to C++’s most vexing parse.
+    ~~~cpp
+    Widget w2(); // most vexing parse! declares a function  named w2 that returns a Widget!
+    Widget w3{}; // calls Widget ctor with no args
+    //the most vexing parse most frequently afflicts developers when they want to default-construct an object, but inadvertently end up declaring a function instead
+
+    class Fctor{
+        public:
+            void operator()(){
+                for(){..}
+            }
+    };
+
+    Fctor fct;
+    std::thread t1(fct); //ok 
+
+    std::thread t2(Fctor()); // most vexing parse
+    std::thread t2((Fctor())); // with extra pair of () .. this works as expected.
+
+    ~~~
+    * During constructor overload resolution, braced initializers are matched to std::initializer_list parameters if at all possible, even if other constructors offer seemingly better matches.
+    * An example of where the choice between parentheses and braces can make a significant difference is creating a std::vector<numeric type> with two arguments.
+    * Choosing between parentheses and braces for object creation inside templates can be challenging.
+
+2. ___Prefer nullptr to 0 and NULL___
+   * Avoid overloading on integral and pointer types.
+   * There is some uncertainty in the details in NULL’s case, because implementations are allowed to give NULL an integral type other than int (e.g., long). 
+    ~~~cpp
+    void f(int); // three overloads of f
+    void f(bool);
+    void f(void*);
+
+    f(0); // calls f(int), not f(void*)
+    f(NULL); // might not compile, but typically calls f(int). Never calls f(void*)
+    f(nullptr);         // calls f(void*) overload
+
+    ~~~
+
+3. ___Prefer alias declarations to typedefs___
+    ~~~cpp
+    //alias
+    template<typename T> // MyAllocList<T> 
+    using MyAllocList = std::list<T, MyAlloc<T>>; // is synonym for std::list<T, MyAlloc<T>>
+    MyAllocList<Widget> lw; // client code
+
+    //typedef
+    template<typename T> // MyAllocList<T>::type 
+    // is synonym for std::list<T, MyAlloc<T>>
+    struct MyAllocList { 
+    typedef std::list<T, MyAlloc<T>> type; 
+    }; 
+    MyAllocList<Widget>::type lw; // client code 
+    ~~~
+    * typedefs don’t support templatization, but alias declarations do.
+    * Alias templates avoid the “::type” suffix and, in templates, the “typename” prefix often required to refer to typedefs.
+
+4. ___Prefer Scoped enums (`enum class`) to unscoped enums___
+    * Enumerators of scoped enums are visible only within the enum. They convert to other types only with a cast.
+    * Both scoped and unscoped enums support specification of the underlying type. 
+      The default underlying type for scoped enums is int. Unscoped enums have no default underlying type.
+    * Scoped enums may always be forward-declared. 
+      Unscoped enums may be forward-declared only if their declaration specifies an underlying type.
+
+5. ___Prefer deleted functions to private undefined ones___
+    
+    ~~~cpp
+    /*
+    *Declaring these functions private prevents clients from calling them. Deliberately failing to define them means that if code that still has access to them 
+    (i.e., member functions or friends of the class) uses them, 'linking` will fail due to missing function definitions.
+    */
+    ...
+    private:
+        basic_ios(const basic_ios& );            // not defined
+        basic_ios& operator=(const basic_ios&);  // not defined
+    };
+
+    ----
+    /*
+    Deleted functions may not be used in any way, so even code that’s in member and friend functions will fail to compile if it tries to copy basic_ios objects. 
+    That’s an improvement over the C++98 behavior, where such improper usage wouldn’t be diagnosed until link-time.
+    */
+    public:
+    ...
+    basic_ios(const basic_ios& ) = delete; 
+    basic_ios& operator=(const basic_ios&) = delete; 
+    ...
+    ~~~
+    * Any function may be deleted, including non-member functions and template instantiations.
+
+6. ___Declare overriding functions override___
+    * Member function reference qualifiers make it possible to treat lvalue and rvalue objects (*this) differently.
+    * Applying `final` to a virtual function prevents the function from being overridden in derived classes. final may also be applied to a class, in which case the class is prohibited from being used as a base class.
+    * For overriding to occur, several requirements must be met:
+        - The base class function must be virtual.
+        - The base and derived function names must be identical (except in the case of destructors).
+        - The parameter types of the base and derived functions must be identical. The constness of the base and derived functions must be identical.
+        - The return types and exception specifications of the base and derived functions must be compatible.
+        - The functions reference qualifiers must be identical
+
+7. ___Prefer const_iterators to iterators___
+    * const_iterators are the STL equivalent of pointers-to-const. 
+    * In maximally generic code, prefer non-member versions of begin, end, rbegin, etc., over their member function counterparts.
+    ~~~cpp
+    template <class C>
+    auto cbegin(const C& container)->decltype(std::begin(container))
+    { 
+        return std::begin(container);  
+    }
+    ~~~
+
+8. ___Declare functions `noexcept` if they won’t emit exceptions___
+    * noexcept is part of a function’s interface, and that means that callers may depend on it.
+    * noexcept functions are more optimizable than non-noexcept functions.
+    * noexcept is particularly valuable for the move operations, swap, memory deallocation functions, and destructors.
+    * Most functions are exception-neutral rather than noexcept.
+
+9. ___Use `constexpr` whenever possible___
+    * constexpr objects are const and are initialized with values known during compilation.
+      constexpr - usage to limit the size of array
+    * constexpr functions can produce compile-time results when called with arguments whose values are known during compilation.
+      Declaring a function `constexpr` makes its result available during compilation.
+    * constexpr is part of an object’s or function’s interface.
+    * const doesn’t offer the same guarantee as constexpr, because `const` objects need not be initialized with values known during compilation
+
+10. ___Make `const` member functions thread safe___ 
+    * unless you’re certain they’ll never be used in a concurrent context.
+    * For a single variable or memory location requiring synchronization, use of a `std::atomic` is adequate, but once you get to two or more variables or memory locations that require manipulation as a unit, you should reach for a `mutex`
+
+11. ___Understand special member function generation___    
+    * Rules governing member functions:
+        - Default constructor: Generated only if the class contains no user-declared constructors.
+        - Destructor: _destructors are noexcept_ by default. 
+                      virtual only if a base class destructor is virtual.
+        - Copy constructor: memberwise copy construction of non-static data members. 
+                            Generated only if the class lacks a user- declared copy constructor. 
+                            Deleted if the class declares a move operation. 
+                            Generation of this function in a class with a user-declared copy assignment operator or destructor is deprecated.
+        - Copy assignment operator: memberwise copy assignment of non-static data members. 
+                                    Generated only if the class lacks a user-declared copy assignment operator. 
+                                    Deleted if the class declares a move operation. 
+                                    Generation of this function in a class with a user-declared copy constructor or destructor is deprecated.
+        - Move constructor and move assignment operator: Each performs memberwise moving of non-static data members. 
+                                                         Generated only if the class contains no user-declared copy operations, move operations, or destructor.
+
+    * Member function templates never suppress generation of special member functions.
+----
+
+### Concurrency API
+
+1. ___Prefer task-based programming to thread- based___
+    * The std::thread API offers no direct way to get return values from asynchronously run functions, and if those functions throw, the program is terminated.
+    * Task-based programming via std::async with the default launch policy handles most of these issues for you - manual management of thread exhaustion, oversubscription, load balancing, and adaptation to new platforms
+    * But there are _some situations where using threads directly may be appropriate_: 
+        - _You need access to the API of the underlying threading implementation_ - 
+        `std::thread` objects typically offer the `native_handle` member function. There is no counterpart to this functionality for std::futures (i.e., for what std::async returns). C++ threads has no notion of thread priority & affinity
+        - _You need to implement threading technology beyond the C++ concurrency API_ - e.g. thread pools
+
+2. ___Specify std::launch::async if asynchronicity is essential___
+
+    * The `std::launch::async` launch policy means that f must be run asynchronously, i.e., on a different thread.
+      The `std::launch::deferred` launch policy means that f may run only when get or wait is called on the future returned by std::async
+    * The default launch policy for std::async permits both asynchronous and synchronous task execution. 
+      This flexibility leads to uncertainty when accessing `thread_locals`, implies that the task may never execute, and affects program logic for timeout-based wait calls.
  
+3. ___Make std::threads `unjoinable` on all paths___
+    * join-on-destruction can lead to difficult-to-debug performance anomalies. 
+    * detach-on-destruction can lead to difficult-to-debug undefined behavior. 
+    * Declare std::thread objects last in lists of data membe
+
+4.  ___Be aware of varying thread handle destructor behavior___
+    * Hardware threads are the threads that actually perform computation. Contemporary machine architectures offer one or more hardware threads per CPU core.
+      Software threads (also known as OS threads or system threads) are the threads that the operating system1 manages across all processes and schedules for execution on hardware threads. Both `std::thread` objects and `future` objects can be thought of as handles to system threads
+
+
+
 ----
 ### Concurrency
 
-------
+
+    
+----
 #### Process vs Thread
 * Two Programming models for concurrent programming
     1. Multiprocessing
@@ -277,8 +504,8 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 ----
 ##
 -----
-### STL - Containers, Algo, Iter
-> create a table form for insert, delete operations for all the containers
+## STL - Containers, Algo, Iter
+ - ToDo create a table form for insert, delete operations for all the containers
 insertion into containers - multiple ways 
 - list :
     - insertion: push_back, push_front, insert
@@ -438,7 +665,8 @@ insertion into containers - multiple ways
 - calling a specific version of virtual function
 
 -----
-### Design
+## Design
+
 - `SOLID`
     - Avoiding tight coupling is the key!
 
@@ -472,7 +700,7 @@ insertion into containers - multiple ways
         - Abstractions should not depend upon details. Details should depend upon abstractions. 
         - *Would you solder a lamp directly to the electrical wiring in a wall?*
 
-#### DesignPattern
+## DesignPatterns
 - Singleton(threadSafe)
 - Command Pattern
 - Factories
@@ -520,201 +748,6 @@ insertion into containers - multiple ways
 - `std::uniform_int_distribution`
 ----
 
-### Modern C++
-
-#### Deducing Types
-1. ___template type deduction___
-    ~~~cpp
-    template<typename T>
-    void f(ParamType param); 
-
-    f(expr); 
-    //In the call to f, compilers use expr to deduce types for T and ParamType.
-    ~~~
-    Three cases of Template type deduction based on the characteristics of ParamType, the type specifier for param in the general function template.
-    1. The type specifier is a pointer or reference, but not a universal reference.
-    2. The type specifier is a universal reference.
-    3. The type specifier is neither a pointer nor a reference
-
-    - During template type deduction, arguments that are references are treated as non-references, i.e., their reference-ness is ignored.
-    - When deducing types for universal reference parameters, lvalue arguments get special treatment.
-    - When deducing types for by-value parameters, const and/or volatile arguments are treated as non-const and non-volatile.
-    - During template type deduction, arguments that are array or function names decay to pointers, unless they’re used to initialize references.
-
-2. ___auto type deduction___
-    ~~~cpp
-    auto x1 = 27; // type is int, value is 27 
-    auto x2(27); // ditto
-    auto x3 = { 27 }; // type is std::initializer_list<int> & value is { 27 }
-    auto x4{ 27 }; // ditto
-    ~~~
-    * auto type deduction is usually the same as template type deduction, but auto type deduction assumes that 
-      a braced initializer represents a std::initializer_list, and template type deduction doesn’t.
-    * auto in a function return type or a lambda parameter implies template type deduction, not auto type deduction.
-    * auto variables must be initialized, are generally immune to type mismatches that can lead to portability or efficiency problems, 
-      can ease the process of refactoring, and typically require less typing than variables with explicitly specified types.
-    * When `auto` may not be used: 'Invisible' proxy types can cause auto to deduce the "wrong" type for an initializing expression. 
-      The explicitly typed initializer idiom forces auto to deduce the type you want it to have.
-
-3. ___`decltype`___
-    * decltype almost always yields the type of a variable or expression without any modifications.
-    * For lvalue expressions of type T other than names, decltype always reports a type of T&.
-    * C++14 supports decltype(auto), which, like auto, deduces a type from its initializer, but it performs the type deduction using the decltype rules.
-
-4. ___how to view deduced types___
-    * opertor `typeid` takes an expression or a type and returns a reference to an object of `type_info` or a subclass of it 
-    (which is implementation defined) This is because typeid returns a reference to a static object, 
-    so if you call it on two objects that are the same type, you will get two references to the same thing, which is why the equality test returns true.
-    * std::type_info::name 
-    * to find the type : use of "./bin/executable | c++filt -t"
-----
-#### New features 
-1. ___uniform initialization___ ,  () vs {}
-    * Braced initialization is the most widely usable initialization syntax, it prevents narrowing conversions, and it’s immune to C++’s most vexing parse.
-    ~~~cpp
-    Widget w2(); // most vexing parse! declares a function  named w2 that returns a Widget!
-    Widget w3{}; // calls Widget ctor with no args
-    //the most vexing parse most frequently afflicts developers when they want to default-construct an object, but inadvertently end up declaring a function instead
-
-    class Fctor{
-        public:
-            void operator()(){
-                for(){..}
-            }
-    };
-
-    Fctor fct;
-    std::thread t1(fct); //ok 
-
-    std::thread t2(Fctor()); // most vexing parse
-    std::thread t2((Fctor())); // with extra pair of () .. this works as expected.
-
-    ~~~
-    * During constructor overload resolution, braced initializers are matched to std::initializer_list parameters if at all possible, even if other constructors offer seemingly better matches.
-    * An example of where the choice between parentheses and braces can make a significant difference is creating a std::vector<numeric type> with two arguments.
-    * Choosing between parentheses and braces for object creation inside templates can be challenging.
-
-2. ___Prefer nullptr to 0 and NULL___
-   * Avoid overloading on integral and pointer types.
-   * There is some uncertainty in the details in NULL’s case, because implementations are allowed to give NULL an integral type other than int (e.g., long). 
-    ~~~cpp
-    void f(int); // three overloads of f
-    void f(bool);
-    void f(void*);
-
-    f(0); // calls f(int), not f(void*)
-    f(NULL); // might not compile, but typically calls f(int). Never calls f(void*)
-    f(nullptr);         // calls f(void*) overload
-
-    ~~~
-
-3. ___Prefer alias declarations to typedefs___
-    ~~~cpp
-    //alias
-    template<typename T> // MyAllocList<T> 
-    using MyAllocList = std::list<T, MyAlloc<T>>; // is synonym for std::list<T, MyAlloc<T>>
-    MyAllocList<Widget> lw; // client code
-
-    //typedef
-    template<typename T> // MyAllocList<T>::type 
-    // is synonym for std::list<T, MyAlloc<T>>
-    struct MyAllocList { 
-    typedef std::list<T, MyAlloc<T>> type; 
-    }; 
-    MyAllocList<Widget>::type lw; // client code 
-    ~~~
-    * typedefs don’t support templatization, but alias declarations do.
-    * Alias templates avoid the “::type” suffix and, in templates, the “typename” prefix often required to refer to typedefs.
-
-4. ___Prefer Scoped enums (`enum class`) to unscoped enums___
-    * Enumerators of scoped enums are visible only within the enum. They convert to other types only with a cast.
-    * Both scoped and unscoped enums support specification of the underlying type. 
-      The default underlying type for scoped enums is int. Unscoped enums have no default underlying type.
-    * Scoped enums may always be forward-declared. 
-      Unscoped enums may be forward-declared only if their declaration specifies an underlying type.
-
-5. ___Prefer deleted functions to private undefined ones___
-    
-    ~~~cpp
-    /*
-    *Declaring these functions private prevents clients from calling them. Deliberately failing to define them means that if code that still has access to them 
-    (i.e., member functions or friends of the class) uses them, 'linking` will fail due to missing function definitions.
-    */
-    ...
-    private:
-        basic_ios(const basic_ios& );            // not defined
-        basic_ios& operator=(const basic_ios&);  // not defined
-    };
-
-    ----
-    /*
-    Deleted functions may not be used in any way, so even code that’s in member and friend functions will fail to compile if it tries to copy basic_ios objects. 
-    That’s an improvement over the C++98 behavior, where such improper usage wouldn’t be diagnosed until link-time.
-    */
-    public:
-    ...
-    basic_ios(const basic_ios& ) = delete; 
-    basic_ios& operator=(const basic_ios&) = delete; 
-    ...
-    ~~~
-    * Any function may be deleted, including non-member functions and template instantiations.
-
-6. ___Declare overriding functions override___
-    * Member function reference qualifiers make it possible to treat lvalue and rvalue objects (*this) differently.
-    * Applying `final` to a virtual function prevents the function from being overridden in derived classes. final may also be applied to a class, in which case the class is prohibited from being used as a base class.
-    * For overriding to occur, several requirements must be met:
-        - The base class function must be virtual.
-        - The base and derived function names must be identical (except in the case of destructors).
-        - The parameter types of the base and derived functions must be identical. The constness of the base and derived functions must be identical.
-        - The return types and exception specifications of the base and derived functions must be compatible.
-        - The functions reference qualifiers must be identical
-
-7. ___Prefer const_iterators to iterators___
-    * const_iterators are the STL equivalent of pointers-to-const. 
-    * In maximally generic code, prefer non-member versions of begin, end, rbegin, etc., over their member function counterparts.
-    ~~~cpp
-    template <class C>
-    auto cbegin(const C& container)->decltype(std::begin(container))
-    { 
-        return std::begin(container);  
-    }
-    ~~~
-
-8. ___Declare functions `noexcept` if they won’t emit exceptions___
-    * noexcept is part of a function’s interface, and that means that callers may depend on it.
-    * noexcept functions are more optimizable than non-noexcept functions.
-    * noexcept is particularly valuable for the move operations, swap, memory deallocation functions, and destructors.
-    * Most functions are exception-neutral rather than noexcept.
-
-9. ___Use `constexpr` whenever possible___
-    * constexpr objects are const and are initialized with values known during compilation.
-      constexpr - usage to limit the size of array
-    * constexpr functions can produce compile-time results when called with arguments whose values are known during compilation.
-      Declaring a function `constexpr` makes its result available during compilation.
-    * constexpr is part of an object’s or function’s interface.
-    * const doesn’t offer the same guarantee as constexpr, because `const` objects need not be initialized with values known during compilation
-
-10. Make const member functions thread safe 
-    * unless you’re certain they’ll never be used in a concurrent context.
-    * For a single variable or memory location requiring synchronization, use of a `std::atomic` is adequate, but once you get to two or more variables or memory locations that require manipulation as a unit, you should reach for a `mutex`
-
-11. ___Understand special member function generation___    
-    * Rules governing member functions:
-        - Default constructor: Generated only if the class contains no user-declared constructors.
-        - Destructor: _destructors are noexcept_ by default. 
-                      virtual only if a base class destructor is virtual.
-        - Copy constructor: memberwise copy construction of non-static data members. 
-                            Generated only if the class lacks a user- declared copy constructor. 
-                            Deleted if the class declares a move operation. 
-                            Generation of this function in a class with a user-declared copy assignment operator or destructor is deprecated.
-        - Copy assignment operator: memberwise copy assignment of non-static data members. 
-                                    Generated only if the class lacks a user-declared copy assignment operator. 
-                                    Deleted if the class declares a move operation. 
-                                    Generation of this function in a class with a user-declared copy constructor or destructor is deprecated.
-        - Move constructor and move assignment operator: Each performs memberwise moving of non-static data members. 
-                                                         Generated only if the class contains no user-declared copy operations, move operations, or destructor.
-
-    * Member function templates never suppress generation of special member functions.
     
 -----
 * using static_cast to fix narrowing conversion
@@ -908,6 +941,5 @@ int main(){
 	
 	return 0;
 }
-
 
 ~~~

@@ -3,24 +3,29 @@
  *  Concurrent C++
  *
  */
-#include "stdafx.h"
+// #include "stdafx.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <memory>
 #include <thread>
 #include <mutex>
+
+
 /* Using mutex to synchronize threads */
-std::mutex m_mutex;
+std::mutex m_mutex; //Avoid using global mutex
 
 using std::string;
 using std::endl;
 using std::cout;
 using std::ofstream;
+using std::mutex;
+using std::unique_lock;
 
+///////////////////////////////////////////////////////////////////////////////
 void shared_print(string id, int value) {
 	std::lock_guard<std::mutex> locker(m_mutex);
-   //m_mutex.lock();
+   //m_mutex.lock(); //Avoid using global mutex
    // if (m_mutex.trylock()) {...}
 	cout << "From " << id << ": " << value << endl;
    //m_mutex.unlock();
@@ -34,18 +39,19 @@ public:
 	}
 };
 
-int main() {
+int main_lock_guard() 
+{
 	Fctor fctor;
 	std::thread t1(fctor);
 
 	for (int i=0; i<100; i++)
-		shared_print("main", i);
+		shared_print("main_lock_guard", i);
 
 	t1.join();
 
 	return 0;
 }
-
+///////////////////////////////////////////////////////////////////////////////
 
 /*
  * 1. Avoid global variables
@@ -69,35 +75,36 @@ public:
 
 };
 
-class Fctor {
+class Fctor2 {
 	LogFile& m_log;
 public:
-	Fctor(LogFile& log):m_log(log) {}
+	Fctor2(LogFile& log):m_log(log) {}
 	void operator()() {
 		for (int i=0; i>-100; i--) 
 			m_log.shared_print("t1", i);
 	}
 };
 
-int main() {
+int main_LogFileWithFctor() 
+{
 	LogFile log;
-	Fctor fctor(log);
+	Fctor2 fctor(log);
 	std::thread t1(fctor);
-
 	for (int i=0; i<100; i++)
-		log.shared_print("main", i);
-
+		log.shared_print("main_LogFileWithFctor", i);
 	t1.join();
-
 	return 0;
 }
 
-/* the ofstream will not be protected if it is leaked out */
+
+/* Important: Do not let your user work on protected data directly */
+/*
+// the ofstream will not be protected if it is leaked out 
 // Example: add a LogFile method:
 	ofstream* getStream() {
 		return &f;
 	}
-// main():
+// main:
 	ofstream* fs = log.getStream();
 	*fs << "ddummy" << endl;  // Unprotected access
 
@@ -107,10 +114,19 @@ int main() {
 		usrFunc(f);
 	}
 
-/* Important: Do not let your user work on protected data directly */
+ */
 
 
-/* Interface is not thread safe */
+
+/*
+Avoiding Data Race:
+1. Use mutex to syncrhonize data access;
+2. Never leak a handle of data to outside
+3. Design interface appropriately.
+*/
+
+/*
+//This Interface is not thread safe 
 class stack {
 	int* _data;
 	std::mutex _mu;
@@ -124,25 +140,20 @@ void function_1(stack& st) {
 	int v = st.pop();
 	process(v);
 }
-
-/*
-Avoiding Data Race:
-1. Use mutex to syncrhonize data access;
-2. Never leak a handle of data to outside
-3. Design interface appropriately.
 */
 
 
 
 
 
+
 /* Deadlock */
-class LogFile {
+class LogFile2 {
 	std::mutex _mu;
 	std::mutex _mu_2;
 	ofstream f;
 public:
-	LogFile() {
+	LogFile2() {
 		f.open("log.txt");
 	}
 	void shared_print(string id, int value) {
@@ -160,12 +171,12 @@ public:
 //
 
 /* C++ 11 std::lock */
-class LogFile {
+class LogFile3 {
 	std::mutex m_mutex;
 	std::mutex m_mutex_2;
 	ofstream f;
 public:
-	LogFile() {
+	LogFile3() {
 		f.open("log.txt");
 	}
 	void shared_print(string id, int value) {
@@ -199,11 +210,11 @@ Locking Granularity:
 
 
 /* Deferred Lock */
-class LogFile {
+class LogFile4 {
 	std::mutex m_mutex;
 	ofstream f;
 public:
-	LogFile() {
+	LogFile4() {
 		f.open("log.txt");
 	}
 	void shared_print(string id, int value) {
@@ -222,11 +233,11 @@ public:
 
 /* unique_lock for transferring mutex ownership */
 
-class LogFile {
+class LogFile5 {
 	std::mutex m_mutex;
 	ofstream f;
 public:
-	LogFile() {
+	LogFile5() {
 		f.open("log.txt");
 	}
 	unique_lock<mutex> giveMeLock() {
@@ -238,28 +249,11 @@ public:
 	}
 };
 
-int main() {
-	LogFile log;
-	unique_lock<mutex> locker = log.giveMeLock();
-   // I don't want to shared_print anything, but I don't want anybody else to do that either untill I am done.
-
-   // I can also release the lock before locker is destroyed
-   locker.unlock();  // lock_guard can't unlock
-
-   //...
-   // allow other thread to use log
-
-   locker.lock();  // lock again. -- finer grained lock alows more resource sharing 
-
-	return 0;
-}
-
-
 
 
 
 /* Lock for Initialization */
-class LogFile {
+class LogFile6 {
 	std::mutex m_mutex;
 	ofstream f;
 public:
@@ -274,7 +268,7 @@ public:
 
 // Problem: log.txt still will be opened multiple times
 
-class LogFile {
+class LogFile7 {
 	std::mutex m_mutex;
 	ofstream f;
 public:
@@ -293,7 +287,7 @@ public:
 
 
 // C++ 11 solution:
-class LogFile {
+class LogFile8 {
    static int x;
 	std::mutex m_mutex;
 	ofstream f;
@@ -301,28 +295,52 @@ class LogFile {
 	void init() { f.open("log.txt"); }
 public:
 	void shared_print(string id, int value) {
-      std::call_once(_flag, &LogFile::init, this); // init() will only be called once by one thread
+      std::call_once(m_flag, &LogFile8::init, this); // init() will only be called once by one thread
 		//std::call_once(m_flag, [&](){ f.open("log.txt"); });  // Lambda solution
 		//std::call_once(_flag, [&](){ _f.open("log.txt"); });  // file will be opened only once by one thread
 		f << "From " << id << ": " << value << endl;
 	}
 };
-int LogFile::x = 9;
+int LogFile8::x = 9;
 
 //Note: once_flag and mutex cannot be copied or moved.
 //      LogFile can neither be copy constructed nor copy assigned
 
 // static member data are guaranteed to be initialized only once.
 
+int main_LogFile5() 
+{
+	LogFile5 log;
+	unique_lock<mutex> locker = log.giveMeLock();
+   // I don't want to shared_print anything, but I don't want anybody else to do that either untill I am done.
+
+   // I can also release the lock before locker is destroyed
+   locker.unlock();  // lock_guard can't unlock
+
+   //...
+   // allow other thread to use log
+
+   locker.lock();  // lock again. -- finer grained lock alows more resource sharing 
+
+	return 0;
+}
 
 
 
-std::recursive_mutex
+
+
+// std::recursive_mutex
 // A mutex can be locked multiple times (it must be released multiple times also)
 
 
 
 
-
+int main()
+{
+	// main_lock_guard(); 
+	// main_LogFileWithFctor(); 
+	main_LogFile5();
+	return 0;
+}
 
 

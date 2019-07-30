@@ -1,5 +1,5 @@
 /* Synchrosizing Operations */
-#include "stdafx.h"
+// #include "stdafx.h"
 
 #include <deque>
 #include <functional>
@@ -8,27 +8,36 @@
 #include <thread>
 #include <string>
 #include <mutex>
+#include <chrono>
+#include <future>
 
 std::deque<int> q;
 std::mutex mu;
+std::condition_variable cond;
 
 using std::string;
 using std::endl;
 using std::cout;
 using std::ofstream;
+using std::mutex;
+using std::future;
+using std::unique_lock;
 
-void function_1() {
+
+void function_1() 
+{
 	int count = 10;
 	while (count > 0) {
 		std::unique_lock<mutex> locker(mu);
 		q.push_front(count);
 		locker.unlock();
-		std::this_thread::sleep_for(chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 		count--;
 	}
 }
 
-void function_2() {
+void function_2() 
+{
 	int data = 0;
 	while ( data != 1) {
 		std::unique_lock<mutex> locker(mu);
@@ -40,11 +49,13 @@ void function_2() {
 		} else {
 			locker.unlock();
 		}
-		std::this_thread::sleep_for(chrono::milliseconds(10));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
+
 // It is hard to set the sleep time.
-int main() {
+int main_sleep_for() 
+{
 	std::thread t1(function_1);
 	std::thread t2(function_2);
 	t1.join();
@@ -55,19 +66,19 @@ int main() {
 
 
 // Using conditional variable and mutex
-void function_1() {
+void function_1B() {
 	int count = 10;
 	while (count > 0) {
 		std::unique_lock<mutex> locker(mu);
 		q.push_front(count);
 		locker.unlock();
 		cond.notify_one();  // Notify one waiting thread, if there is one.
-		std::this_thread::sleep_for(chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 		count--;
 	}
 }
 
-void function_2() {
+void function_2B() {
 	int data = 0;
 	while ( data != 1) {
 		std::unique_lock<mutex> locker(mu);
@@ -80,9 +91,15 @@ void function_2() {
 	}
 }
 
-
-
-
+// It is hard to set the sleep time.
+int main_conditionVariable() 
+{
+	std::thread t1(function_1B);
+	std::thread t2(function_2B);
+	t1.join();
+	t2.join();
+	return 0;
+}
 
 
 
@@ -95,9 +112,10 @@ int factorial(int N) {
 	return res;
 }
 
-int main() {
+int main_factorial() 
+{
 	//future<int> fu = std::async(factorial, 4); 
-	future<int> fu = std::async(std::launch::deferred | std::launch::async, factorial, 4);
+	std::future<int> fu = std::async(std::launch::deferred | std::launch::async, factorial, 4);
 	cout << "Got from child thread #: " << fu.get() << endl;
 	// fu.get();  // crash
 	return 0;
@@ -106,7 +124,7 @@ int main() {
 
 
 /* Asynchronously provide data with promise */
-int factorial(future<int>& f) {
+int factorialFuture(future<int>& f) {
 	// do something else
 
 	int N = f.get();     // If promise is distroyed, exception: std::future_errc::broken_promise
@@ -118,14 +136,14 @@ int factorial(future<int>& f) {
 	return res;
 }
 
-int main() {
-	promise<int> p;
+int main_factorialFuture() {
+	std::promise<int> p;
 	future<int> f = p.get_future();
 
-	future<int> fu = std::async(std::launch::async, factorial, std::ref(f));
+	future<int> fu = std::async(std::launch::async, factorialFuture, std::ref(f));
 
 	// Do something else
-	std::this_thread::sleep_for(chrono::milliseconds(20));
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	//p.set_value(5);   
 	//p.set_value(28);  // It can only be set once
 	p.set_exception(std::make_exception_ptr(std::runtime_error("Flat tire")));
@@ -138,7 +156,7 @@ int main() {
 
 
 /* shared_future */
-int factorial(shared_future<int> f) {
+int factorialSharedFuture(std::shared_future<int> f) {
 	// do something else
 
 	int N = f.get();     // If promise is distroyed, exception: std::future_errc::broken_promise
@@ -151,31 +169,24 @@ int factorial(shared_future<int> f) {
 	return res;
 }
 
-int main() {
+int main_factorialSharedFuture() 
+{
 	// Both promise and future cannot be copied, they can only be moved.
-	promise<int> p;
+	std::promise<int> p;
 	future<int> f = p.get_future();
-	shared_future<int> sf = f.share();
+	std::shared_future<int> sf = f.share();
 
-	future<int> fu = std::async(std::launch::async, factorial, sf);
-	future<int> fu2 = std::async(std::launch::async, factorial, sf);
+	future<int> fu = std::async(std::launch::async, factorialSharedFuture, sf);
+	future<int> fu2 = std::async(std::launch::async, factorialSharedFuture, sf);
 
 	// Do something else
-	std::this_thread::sleep_for(chrono::milliseconds(20));
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	p.set_value(5);
 
 	cout << "Got from child thread #: " << fu.get() << endl;
 	cout << "Got from child thread #: " << fu2.get() << endl;
 	return 0;
 }
-
-
-
-
-
-
-
-
 
 
 /* async() are used in the same ways as thread(), bind() */
@@ -188,12 +199,13 @@ public:
 };
 A a;
 
-int main() {
+int main_async() {
 	a.note = "Original"; 
 	std::future<int> fu3 = std::async(A(), 4);    // A tmpA;  tmpA is moved to async(); create a task/thread with tmpA(4);
 	std::future<int> fu4 = std::async(a, 7);    
-	std::future<int> fu4 = std::async(std::ref(a), 7); // a(7);  Must use reference wrapper
-	std::future<int> fu5 = std::async(&a, 7); // Won't compile
+	std::future<int> fu6 = std::async(std::ref(a), 7); // a(7);  Must use reference wrapper
+	
+	//std::future<int> fu5 = std::async(&a, 7); // Won't compile
 
 	std::future<void> fu1 = std::async(&A::f, a, 56, 'z'); // A copy of a invokes f(56, 'z')
 	std::future<long> fu2 = std::async(&A::g, &a, 5.6);    // a.g(5.6);  a is passed by reference
@@ -219,23 +231,14 @@ int main() {
 
 
 /* packaged_task */
-
-std::mutex mu;
+std::mutex mu_2;
 std::deque<std::packaged_task<int()> > task_q;
-
-int factorial(int N) {
-	int res = 1;
-	for (int i=N; i>1; i--)
-		res *= i;
-
-	return res;
-}
 
 void thread_1() {
 	for (int i=0; i<10000; i++) {
 		std::packaged_task<int()> t;
 		{
-			std::lock_guard<std::mutex> locker(mu);
+			std::lock_guard<std::mutex> locker(mu_2);
 			if (task_q.empty()) 
 				continue;
 			t = std::move(task_q.front());
@@ -245,15 +248,16 @@ void thread_1() {
 	}
 }
 
-int main() {
+int main_packagedTask() 
+{
 	std::thread th(thread_1);
 
-	std::packaged_task<int()> t(bind(factorial, 6));  
+	std::packaged_task<int()> t(std::bind(factorial, 6));  
 	std::future<int> ret = t.get_future();
-	std::packaged_task<int()> t2(bind(factorial, 9));
+	std::packaged_task<int()> t2(std::bind(factorial, 9));
 	std::future<int> ret2 = t2.get_future();
 	{
-		std::lock_guard<std::mutex> locker(mu);
+		std::lock_guard<std::mutex> locker(mu_2);
 		task_q.push_back(std::move(t));
 		task_q.push_back(std::move(t2));
 	}
@@ -273,63 +277,51 @@ int main() {
  * - async() returns a future
  */
 
-
-
-
-
-
-
-
-
-
-
-
 /* threads with time constrains */
 
-int main() {
+int main_timeConstraint() 
+{
     /* thread */
     std::thread t1(factorial, 6);
-    std::this_thread::sleep_for(chrono::milliseconds(3));
-    chrono::steady_clock::time_point tp = chrono::steady_clock::now() + chrono::microseconds(4);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
+    std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + std::chrono::microseconds(4);
     std::this_thread::sleep_until(tp);
 
     /* Mutex */
     std::mutex mu;
     std::lock_guard<mutex> locker(mu);
     std::unique_lock<mutex> ulocker(mu);
-    ulocker.try_lock();
-    ulocker.try_lock_for(chrono::nanoseconds(500));
+    
+	/* ToDo
+	ulocker.try_lock();
+    ulocker.try_lock_for(std::chrono::nanoseconds(500));
     ulocker.try_lock_until(tp);
+ 	*/
 
     /* Condition Variable */
-    std:condition_variable cond;
-    cond.wait_for(ulocker, chrono::microseconds(2));
-    cond.wait_until(ulocker, tp);
+    std::condition_variable cond1;
+    cond1.wait_for(ulocker, std::chrono::microseconds(2));
+    cond1.wait_until(ulocker, tp);
 
     /* Future and Promise */
     std::promise<int> p; 
     std::future<int> f = p.get_future();
     f.get();
     f.wait();
-    f.wait_for(chrono::milliseconds(2));
+    f.wait_for(std::chrono::milliseconds(2));
     f.wait_until(tp);
 
     /* async() */
-    std::future<int> fu = async(factorial, 6);
+    std::future<int> fu = std::async(factorial, 6);
 
     /* Packaged Task */
     std::packaged_task<int(int)> t(factorial);
     std::future<int> fu2 = t.get_future();
     t(6);
- 	
-	 return 0;
-}
 
 
-
-
-
-   // Together with thread library 
+	/*
+   	// Together with thread library 
 	std::this_thread::sleep_until(steady_clock::now() + seconds(3));
 
 	std::future<int> fu;
@@ -341,4 +333,22 @@ int main() {
 	std::unique_lock<std::mutex> locker(mu);
 	c.wait_for(locker, seconds(3));
 	c.wait_until(locker, steady_clock::now() + seconds(3));
+ 	*/
+	
+	return 0;
+}
+
+
+
+
+
  
+
+int main()
+{
+	// main_sleep_for(); 
+	main_conditionVariable();
+
+	return 0;
+}
+

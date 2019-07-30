@@ -112,22 +112,19 @@ int main_exceptionSafe()
 	return 0;
 }
 
-
-
-/*
 // Alternative way: RAII - calling join() in destructor
 class ThreadJoiner {
-	thread& m_th;
+	std::thread & m_th;
 public:
-	explicit ThreadJoiner(thread& t):m_th(t) {}
+	explicit ThreadJoiner(std::thread& t):m_th(t) {}
 	~ThreadJoiner() {
 		if(m_th.joinable()) {
 			m_th.join();
 		}
 	}
 };
-*/
-/*
+
+
 int main_threadJoiner() 
 {
 	cout << "Hollo Bo" << endl;
@@ -144,13 +141,6 @@ int main_threadJoiner()
 	f.close();
 	return 0;
 }
-
-*/
-
-
-
-
-
 
 // We can also create a ThreadDetacher class
 // Prerequisit: join() or detach() can happen at the end of the function
@@ -206,23 +196,22 @@ int main_classMethod() {
 
 
 // Thread with moving parameters
-void call_from_thread(string msg) {
+void call_from_thread2(string msg) {
 	cout << "t1 says: " << msg << endl;
 }
 
-/*
 
 int main_movingParams()
 {
 	string* ps = new string("A friend in need is a friend indeed.");
-	std::thread t1(call_from_thread,  std::move(*ps));
+	std::thread t1(call_from_thread2,  std::move(*ps));
 	t1.join();
 
 	cout << "main: " << *ps << endl;
 	return 0;
 }
 
-*/
+
 // Revisit the RAII example with move semantics
 
 

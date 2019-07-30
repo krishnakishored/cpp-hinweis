@@ -37,21 +37,68 @@ void whatFlavors(vector<int> cost, int money)
 {
     /**
         2
-        4
+        8
         5
-        1 4 5 3 2
-        4
-        4
-        2 2 4 3
+        4 3 2 5 7
+        12
+        5
+        7 2 5 4 11
      * o/p
-        1 4
-        1 2
+        2 4
+        1 3
      */
     std::unordered_multimap<int,int> cost_map;
     for(int i=0;i<cost.size();i++){
         // cost_map.insert(cost[i],i);
         cost_map.emplace(std::make_pair(cost[i], i));
     }
+
+    std::unordered_map<int,int>::iterator it1,it2;
+    /*
+    //Handle duplicates of money/2
+    if(money%2==0 && cost_map.find(money/2)!=cost_map.end())
+    {
+            // // std::pair<std::unordered_multimap<int,int>::iterator, std::unordered_multimap<int,int>::iterator> ret;
+            auto ret = cost_map.equal_range(money/2);
+            if(ret.first!=ret.second){
+                it1 = ret.first;
+                it2 = ++it1;
+                cout<<(it1->second) + 1 << " " << (it2->second) + 1 <<"\n";
+                return;
+            }            
+    }
+    */
+
+    for(int i=0;i<cost.size();i++)
+    {
+        it1 = cost_map.find(cost[i]);
+        it2 = cost_map.find(money-cost[i]);
+
+        if (it1 == it2)
+        {
+            // std::pair<std::unordered_multimap<int,int>::iterator, std::unordered_multimap<int,int>::iterator> ret;
+            auto ret = cost_map.equal_range(money - i);
+            if (ret.first != ret.second)
+            {
+                auto duplicate = ret.first;
+                it2 = ++duplicate;
+                cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
+                break;
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        else if ((it1 != cost_map.end()) && (it2 != cost_map.end()))
+        {
+            cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
+            break;
+        }
+    }
+
+    /*
     for(int i=0;i<cost.size();i++)
     {
         auto it = cost_map.find(money-cost[i]);
@@ -64,11 +111,10 @@ void whatFlavors(vector<int> cost, int money)
                cout<< (it->second)+1 << " " << i+1 ;     
             
                 break;
-            }
-
-    
+            } 
         }
-
+   
+    
         // if(it != cost_map.end())
         // {
         //     // if(it->second ==i)
@@ -80,7 +126,8 @@ void whatFlavors(vector<int> cost, int money)
         //     //     break;
         //     // }
         // }
-    }
+     }
+      */
     
 }
 

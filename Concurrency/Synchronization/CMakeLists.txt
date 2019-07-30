@@ -43,11 +43,10 @@ add_executable(threads_boqian_1)
 target_sources(threads_boqian_1 PRIVATE threads_boqian_1.cpp)
 target_compile_features(threads_boqian_1 PRIVATE cxx_std_14) 
 
+add_executable(threads_boqian_2)
+target_sources(threads_boqian_2 PRIVATE threads_boqian_2.cpp)
+target_compile_features(threads_boqian_2 PRIVATE cxx_std_14)
 
-# add_executable(threads_boqian_2.cpp)
-# target_sources(threads_boqian_2.cpp PRIVATE threads_boqian_2.cpp)
-# target_compile_features(threads_boqian_2 PRIVATE cxx_std_14)
-
-# add_executable(threads_boqian_3.cpp)
-# target_sources(threads_boqian_3.cpp PRIVATE threads_boqian_3.cpp)
-# target_compile_features(threads_boqian_3 PRIVATE cxx_std_14)
+add_executable(threads_boqian_3)
+target_sources(threads_boqian_3 PRIVATE threads_boqian_3.cpp)
+target_compile_features(threads_boqian_3 PRIVATE cxx_std_14)
