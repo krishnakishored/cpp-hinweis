@@ -30,6 +30,7 @@ using std::streamsize;
 
 #include<unordered_map>
 
+
 vector<string> split_string(string);
 
 // Complete the whatFlavors function below.
@@ -47,92 +48,97 @@ void whatFlavors(vector<int> cost, int money)
         2 4
         1 3
      */
-    std::unordered_multimap<int,int> cost_map;
+    
+    std::unordered_map<int,vector<int> >  cost_map;
     for(int i=0;i<cost.size();i++){
-        // cost_map.insert(cost[i],i);
-        cost_map.emplace(std::make_pair(cost[i], i));
-    }
-
-    std::unordered_map<int,int>::iterator it1,it2;
-    /*
-    //Handle duplicates of money/2
-    if(money%2==0 && cost_map.find(money/2)!=cost_map.end())
-    {
-            // // std::pair<std::unordered_multimap<int,int>::iterator, std::unordered_multimap<int,int>::iterator> ret;
-            auto ret = cost_map.equal_range(money/2);
-            if(ret.first!=ret.second){
-                it1 = ret.first;
-                it2 = ++it1;
-                cout<<(it1->second) + 1 << " " << (it2->second) + 1 <<"\n";
-                return;
-            }            
-    }
-    */
-
-    for(int i=0;i<cost.size();i++)
-    {
-        it1 = cost_map.find(cost[i]);
-        it2 = cost_map.find(money-cost[i]);
-
-        if (it1 == it2)
+        auto it= cost_map.find(cost[i]);
+        if(it==cost_map.end())
         {
-            // std::pair<std::unordered_multimap<int,int>::iterator, std::unordered_multimap<int,int>::iterator> ret;
-            auto ret = cost_map.equal_range(money - i);
-            if (ret.first != ret.second)
-            {
-                auto duplicate = ret.first;
-                it2 = ++duplicate;
-                cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
-                break;
-            }
-            else
-            {
-                continue;
-            }
+           vector<int> v={i+1};
+           cost_map.emplace(std::make_pair(cost[i],v));
         }
-
-        else if ((it1 != cost_map.end()) && (it2 != cost_map.end()))
+        else
         {
-            cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
+            it->second.push_back(i+1);
+        }
+        
+    }
+
+    std::unordered_map<int,vector<int>>::iterator it1,it2;
+
+    for(auto elem:cost){
+        it1 = cost_map.find(elem);
+        it2 = cost_map.find(money-elem);
+        
+        if(it1 != cost_map.end() && it2 != cost_map.end() && (it1->second[0] != it2->second[0]))
+        {
+            cout<< (it1->second[0]) << " " << (it2->second[0]) << "\n";
+            
             break;
         }
-    }
+        else if(it1->second.size()>=2)
+        
+                cout<< (it1->second[0])  << " " << (it1->second[1]) << "\n";
+                break;
 
-    /*
-    for(int i=0;i<cost.size();i++)
-    {
-        auto it = cost_map.find(money-cost[i]);
-        if(it!=cost_map.end()){
-            if(it!=cost_map.end()){
-                cout<< i+1 << " " << (it->second)+1;
-                break;
-            }
-            else{
-               cout<< (it->second)+1 << " " << i+1 ;     
-            
-                break;
-            } 
         }
-   
+        // if(it1 != cost_map.end() && it2 != cost_map.end() ){
+        //     if(it1==it2){
+        //          cout<< (it1->second[0])  << " " << (it1->second[1]) << "\n";
+        //          break;
+        //     }
+        //     else{
+        //          cout<< (it1->second[0]) << " " << (it2->second[0]) << "\n";
+        //          break;
+        //     }
+        // }        
     
-        // if(it != cost_map.end())
-        // {
-        //     // if(it->second ==i)
-        //     // {
-        //     //     continue;
-        //     // }
-        //     // else{
-        //     //     cout<< i+1 << " " << (it->second)+1;
-        //     //     break;
-        //     // }
-        // }
-     }
-      */
     
+    
+    
+    // std::unordered_multimap<int,int> cost_map;
+    // for(int i=0;i<cost.size();i++){
+    //     // cost_map.insert(cost[i],i);
+    //     cost_map.emplace(std::make_pair(cost[i], i));
+    // }
+
+    // std::unordered_map<int,int>::iterator it1,it2;
+    
+    // for(int i=0;i<cost.size();i++)
+    // {
+    //     it1 = cost_map.find(cost[i]);
+    //     it2 = cost_map.find(money-cost[i]);
+
+    //     if ((it1 != cost_map.end()) && (it2 != cost_map.end()) && (it1!=it2))
+    //     {
+    //         cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
+    //         break;
+    //     }    
+    //     else if (it1 == it2)
+    //     {
+    //         // std::pair<std::unordered_multimap<int,int>::iterator, std::unordered_multimap<int,int>::iterator> ret;
+    //         auto ret = cost_map.equal_range(cost[i]);
+    //         auto duplicate = ret.first;
+    //         it2 = ++duplicate;
+    //         if (it2 != ret.second)
+    //         {                
+    //             cout << (it1->second) + 1 << " " << (it2->second) + 1 << "\n";
+    //             break;
+    //         }
+    //     }
+    // }   
+     
 }
 
 int main_whatFlavors()
 {
+    vector<int> cost ={4,3,2,5,7};
+    // {2, 2, 4, 3}; //
+    
+    // std::sort(begin(cost),end(cost));
+    int money = 8;
+    whatFlavors(cost, money);
+    /*
     int t;
     cin >> t;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -161,6 +167,8 @@ int main_whatFlavors()
 
         whatFlavors(cost, money);
     }
+
+    */
 
     return 0;
 }

@@ -195,7 +195,161 @@
 
     * Member function templates never suppress generation of special member functions.
 ----
+### Lambda expression
+1. ___Avoid default capture modes___
+* Beyond the Standard Library, lambdas facilitate the on-the-fly specification of callback functions, interface adaption functions, and context-specific functions for one-off calls. 
+* A `closure` is the runtime object created by a lambda. Depending on the capture mode, closures hold copies of or references to the captured data. 
+* Default by-reference capture can lead to dangling references.
+* Default by-value capture is susceptible to dangling pointers (especially this), and it misleadingly suggests that lambdas are self-contained.
+* Captures apply only to non-static local variables (including parameters) visible in the scope where the lambda is created. 
 
+2. ___Use (c++14) init capture to move objects into closures___
+* Like lambda expressions, std::bind produces function objects(say bind object).
+* A bind object contains copies of all the arguments passed to std::bind. For each lvalue argument, the corresponding object in the bind object is copy constructed. For each rvalue, it’s move constructed
+* Using an init capture makes it possible for you to specify
+    - the name of a data member in the closure class generated from the lambda and
+    - an expression initializing that data member.
+* In C++11, emulate init capture via hand-written classes or std::bind.
+
+3. ___Use decltype on auto&& parameters to std::forward them___
+* C++14 generic lambdas—lambdas that use auto in their parameter specifications
+
+    ~~~cpp
+        auto f = [](auto x){ return func(normalize(x)); };    // The implementation of this feature is straight‐ forward: operator() in the lambda’s closure class is a template.
+        
+        //the closure class’s function call operator looks like this:
+        class SomeCompilerGeneratedClassName 
+        { 
+        public:
+            template<typename T>
+            auto operator()(T x) const
+            { return func(normalize(x)); }
+            ... };
+
+        //perfect forwarding lambda   
+        auto f = [](auto&& param)
+        {
+            return func(normalize(std::forward<decltype(param)>(param)));
+        };
+
+    ~~~
+
+4. ___Prefer lambdas to std::bind___
+* std::bind always copies its arguments, but callers can achieve the effect of having an argument stored by reference by applying std::ref to it. 
+* Lambdas are more readable, more expressive, and may be more efficient than using std::bind.
+    ~~~cpp
+    //The result of this is that compressRateB acts as if it holds a reference to w, rather than a copy.
+    auto compressRateB = std::bind(compress, std::ref(w), _1);
+    ~~~
+----
+### Smart Pointers
+
+1. ___Use std::unique_ptr for exclusive-ownership resource management___
+* A common use for std::unique_ptr is as a factory function return type for objects in a hierarchy.
+* std::unique_ptr is even more popular as a mechanism for implementing the Pimpl Idiom.
+* std::unique_ptr is a small, fast, move-only smart pointer for managing resources with exclusive-ownership semantics.
+* By default, resource destruction takes place via delete, but custom deleters can be specified. Stateful deleters and function pointers as deleters increase the size of std::unique_ptr objects.
+
+2. ___Use std::shared_ptr for shared-ownership resource management___
+* std::shared_ptrs offer convenience approaching that of garbage collection for the shared lifetime management of arbitrary resources.
+* Compared to std::unique_ptr, std::shared_ptr objects are typically twice as big, incur overhead for control blocks, and require atomic reference count manipulations.
+* Memory for the reference count must be dynamically allocated
+* Increments and decrements of the reference count must be atomic,
+* Default resource destruction is via delete, but custom deleters are supported. The type of the deleter has no effect on the type of the std::shared_ptr. For std::unique_ptr, the type of the deleter is part of the type of the smart pointer. For std::shared_ptr, it’s not
+* Avoid creating std::shared_ptrs from variables of raw pointer type.
+* std::shared_ptr offers no operator[]. std::shared_ptr has an API that’s designed only for pointers to single objects. std::shared_ptrs can't work with arrays.
+
+3. ___Use std::weak_ptr for std::shared_ptr- like pointers that can dangle___
+* std::weak_ptrs can’t be dereferenced, nor can they be tested for nullness. That’s because std::weak_ptr isn’t a standalone smart pointer. It’s an augmentation of std::shared_ptr.
+* Potential use cases for std::weak_ptr include caching, observer lists, and the prevention of std::shared_ptr cycles.
+* In observer design pattern: A reasonable design is for each subject to hold a container of std::weak_ptrs to its observers, thus making it possible for the subject to determine whether a pointer dangles before using it.
+
+4. ___Prefer std::make_unique and std::make_shared to direct use of new___
+* std::make_unique and std::make_shared are two of the three make functions: functions that take an arbitrary set of arguments, perfect-forward them to the con‐ structor for a dynamically allocated object, and return a smart pointer to that object. The third make function is std::allocate_shared. It acts just like std::make_shared, except its first argument is an allocator object to be used for the dynamic memory allocation.
+
+* Compared to direct use of new, make functions eliminate source code duplication, improve exception safety, and, for std::make_shared and std::allo cate_shared, generate code that’s smaller and faster.
+* Situations where use of make functions is inappropriate include the need to specify custom deleters and a desire to pass braced initializers.
+* For std::shared_ptrs, additional situations where make functions may be ill-advised include (1) classes with custom memory management and (2) systems with memory concerns, very large objects, and std::weak_ptrs that outlive the corresponding std::shared_ptrs.
+
+5. ___When using the Pimpl Idiom, define special member functions in the implementation file___
+* That’s the technique whereby you replace the data members of a class with a pointer to an implementation class (or struct), put the data members that used to be in the primary class into the implementation class, and access those data members indirectly through the pointer. 
+* The Pimpl Idiom decreases build times by reducing compilation dependencies between class clients and class implementations.
+* For std::unique_ptr pImpl pointers, declare special member functions in the class header, but implement them in the implementation file. Do this even if the default function implementations are acceptable.
+* The above advice applies to std::unique_ptr, but not to std::shared_ptr.
+----
+### Misc
+
+1. ___Consider pass by value for copyable parameters that are cheap to move and always copied___
+* For copyable, cheap-to-move parameters that are always copied, pass by value may be nearly as efficient as pass by reference, it’s easier to implement, and it can generate less object code.
+* Copying parameters via construction may be significantly more expensive than copying them via assignment.
+* Pass by value is subject to the slicing problem, so it’s typically inappropriate for base class parameter types.
+
+2. ___Consider emplacement instead of insertion___
+* In principle, emplacement functions should sometimes be more efficient than their insertion counterparts, and they should never be less efficient.
+* In practice, they’re most likely to be faster when (1) the value being added is constructed into the container, not assigned; (2) the argument type(s) passed differ from the type held by the container; and (3) the container won’t reject the value being added due to it being a duplicate.
+* Emplacement functions may perform type conversions that would be rejected by insertion functions.
+
+----
+
+### Rvalue References, Move Semantics, and Perfect Forwarding
+* Move semantics makes it possible for compilers to replace expensive copying operations with less expensive moves. 
+  Move semantics also enables the creation of move-only types, such as std::unique_ptr, std::future, and std::thread.
+
+* Perfect forwarding makes it possible to write function templates that take arbitrary arguments and forward them to other functions such that the target functions receive exactly the same arguments as were passed to the forwarding functions.
+ 
+* Rvalue references are the glue that ties these two rather disparate features together. They’re the underlying language mechanism that makes both move semantics and perfect forwarding possible.
+* A parameter is always an lvalue, even if its type is an rvalue reference
+~~~cpp
+void f(Widget&& w); 
+//the parameter w is an lvalue, even though its type is rvalue-reference-to-Widget. 
+~~~
+1. ___Understand std::move and std::forward___
+* std::move doesn’t move anything. std::forward doesn’t forward anything. 
+  At runtime, neither does anything at all. They generate no executable code. Not a single byte.
+* std::move and std::forward are merely functions (actually function templates) that perform casts. 
+   - std::move unconditionally casts its argument to an rvalue, while
+   ~~~cpp
+   template<typename T> decltype(auto) move(T&& param) {
+     using ReturnType = remove_reference_t<T>&&;
+     return static_cast<ReturnType>(param);
+   }
+   ~~~
+   - std::forward performs this cast only if a particular condition is fulfilled.
+
+2. ___Distinguish universal references from rvalue references___
+* If a function template parameter has type T&& for a deduced type T, or if an object is declared using auto&&, the parameter or object is a universal reference.
+* If the form of the type declaration isn’t precisely type&&, or if type deduction does not occur, type&& denotes an rvalue reference.
+* Universal references correspond to rvalue references if they’re initialized with rvalues. 
+  They correspond to lvalue references if they’re initialized with lvalues.
+
+3. ___Use std::move on rvalue references, std::forward on universal references___
+* Apply std::move to rvalue references and std::forward to universal references the last time each is used.
+* Do the same thing for rvalue references and universal references being returned from functions that return by value.
+* Never apply std::move or std::forward to local objects if they would other‐ wise be eligible for the return value optimization.
+
+4. ___Avoid overloading on universal references___
+* Overloading on universal references almost always leads to the universal refer‐ ence overload being called more frequently than expected.
+* Perfect-forwarding constructors are especially problematic, because they’re typically better matches than copy constructors for non-const lvalues, and they can hijack derived class calls to base class copy and move constructors.
+
+5. ___Familiarize yourself with alternatives to overloading on universal references___
+* Alternatives to the combination of universal references and overloading include the use of distinct function names, passing parameters by lvalue- reference-to-const, passing parameters by value, and using tag dispatch.
+- Constraining templates via std::enable_if permits the use of universal ref‐ erences and overloading together, but it controls the conditions under which compilers may use the universal reference overloads.
+- Universal reference parameters often have efficiency advantages, but they typ‐ ically have usability disadvantages.
+
+6. ___Understand reference collapsing___
+* Reference collapsing occurs in four contexts: template instantiation, auto type generation, creation and use of typedefs and alias declarations, and decltype.
+* When compilers generate a reference to a reference in a reference collapsing context, the result becomes a single reference. 
+  If either of the original references is an lvalue reference, the result is an lvalue reference. Otherwise it’s an rvalue reference.
+* Universal references are rvalue references in contexts where type deduction distinguishes lvalues from rvalues and where reference collapsing occurs.
+
+7. ___Assume that move operations are not present, not cheap, and not used___
+* In code with known types or support for move semantics, there is no need for assumptions.
+
+8. ___Familiarize yourself with perfect forwarding failure cases___
+* Perfect forwarding fails when template type deduction fails or when it deduces the wrong type.
+* The kinds of arguments that lead to perfect forwarding failure are braced ini‐ tializers, null pointers expressed as 0 or NULL, declaration-only integral const static data members, template and overloaded function names, and bitfields.
+
+----
 ### Concurrency API
 
 1. ___Prefer task-based programming to thread- based___
@@ -219,17 +373,31 @@
     * Declare std::thread objects last in lists of data membe
 
 4.  ___Be aware of varying thread handle destructor behavior___
-    * Hardware threads are the threads that actually perform computation. Contemporary machine architectures offer one or more hardware threads per CPU core.
+    * Hardware threads are the threads that actually perform computation. 
       Software threads (also known as OS threads or system threads) are the threads that the operating system1 manages across all processes and schedules for execution on hardware threads. Both `std::thread` objects and `future` objects can be thought of as handles to system threads
 
-
-
-----
-### Concurrency
-
-
+    * std::threads and futures have different behaviors in their destructors.     destruction of a joinable std::thread terminates your program, Yet the destructor for a future sometimes behaves as if it did an implicit join, sometimes as if it did an implicit detach, and sometimes neither.
     
+    * Future destructors normally just destroy the future’s data members.
+    
+    * The final future referring to a shared state for a non-deferred task launched via std::async blocks until the task completes.
+
+5. ___Consider void futures for one-shot event communication___
+    * a communications channel whose transmitting end is a std::promise and whose receiving end is a future can be used for more than just callee-caller communication. Such a communications channel can be used in any situation where you need to transmit information from one place in your program to another
+    *  For simple event communication, condvar-based designs require a superflu‐ ous mutex, impose constraints on the relative progress of detecting and react‐ ing tasks, and require reacting tasks to verify that the event has taken place.
+    * Designs employing a flag avoid those problems, but are based on polling, not blocking.
+    * A condvar and flag can be used together, but the resulting communications mechanism is somewhat stilted.
+    * Using std::promises and futures dodges these issues, but the approach uses heap memory for shared states, and it’s limited to one-shot communication.
+
+
+6. ___Use std::atomic for concurrency, volatile for special memory___    
+    * std::atomic is for data accessed from multiple threads without using mutexes. It’s a tool for writing concurrent software.
+    * `volatile` is for memory where reads and writes should not be optimized away. It’s a tool for working with special memory.
+
+
 ----
+### Concurrency - BoQian
+
 #### Process vs Thread
 * Two Programming models for concurrent programming
     1. Multiprocessing
@@ -758,11 +926,9 @@ insertion into containers - multiple ways
 * T (auto return type)
 
     - 
-* lambda
+
 * using - used for declaration
 * auto&& 
-* closure
-    - Function Objects created through Lambda expressions are known as closures 
 * reference capture, capture by value
 * mutable keyword
 * C++11 Vs C++14 (list of new features)
@@ -881,7 +1047,7 @@ insertion into containers - multiple ways
 //What is include precompiled headers?
 //Why is the reference object a const in constructor 
 //Difference between a struct and class in CPP
-//lambda expressions
+
 //Interfaces Vs Abstract Class
 
 //Date - 03-Mar-2016
@@ -915,6 +1081,7 @@ insertion into containers - multiple ways
     - CodeBlocks (Create a new Compiler & set the path to MinGW executables (had to rename them)) 
 1. add installation location of the binaries to "PATH" environment variable
 1. Use CMake GUI ( less error prone) to generate the codeblocks project files 
+
 
 $ cmake --version   
 cmake version 3.15.0
