@@ -31,7 +31,10 @@ add_executable(sorting_hr)
 target_sources(sorting_hr PRIVATE sorting_hr.cpp)
 target_compile_features(sorting_hr PRIVATE cxx_std_14) 
 
-
 add_executable(warmup_hr)
 target_sources(warmup_hr PRIVATE warmup_hr.cpp)
 target_compile_features(warmup_hr PRIVATE cxx_std_14) 
+
+add_executable(classes_hr)
+target_sources(classes_hr PRIVATE classes_hr.cpp)
+target_compile_features(classes_hr PRIVATE cxx_std_14) 

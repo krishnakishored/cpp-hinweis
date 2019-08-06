@@ -36,7 +36,7 @@ void miniMaxSum(vector<int> arr) {
     cout<< sum-max <<" " <<sum-min;
 }
 
-int main()
+int main_minMaxSum()
 {
     string arr_temp_temp;
     getline(cin, arr_temp_temp);
@@ -88,11 +88,11 @@ vector<string> split_string(string input_string) {
 
 // Complete the flippingBits function below.
 long flippingBits(long n) {
-
+    return (unsigned)~n;
 
 }
 
-int main()
+int main_flippingBits()
 {
     long n = 802743475;
     long result = flippingBits(n);
@@ -119,5 +119,12 @@ int main()
     fout.close();
     */
 
+    return 0;
+}
+
+int main()
+{
+    main_minMaxSum();
+    main_flippingBits();
     return 0;
 }

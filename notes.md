@@ -394,7 +394,6 @@ void f(Widget&& w);
     * std::atomic is for data accessed from multiple threads without using mutexes. It’s a tool for writing concurrent software.
     * `volatile` is for memory where reads and writes should not be optimized away. It’s a tool for working with special memory.
 
-
 ----
 ### Concurrency - BoQian
 
@@ -455,6 +454,19 @@ void f(Widget&& w);
 
 
 
+------
+### Exceptions & Safety
+* You can throw or catch any C++ type that lives up to some simple requirements, namely that it has a valid copy constructor and destructor. 
+* C++ supports exceptions with three keywords: `try`, `catch`, and `throw`.
+    ~~~cpp
+    try {
+       // Something that may call "throw", e.g.
+       throw(Exception("Uh-oh"));
+    }
+    catch(Exception& e) {
+       // Do something useful with e
+    }
+    ~~~
 ------
 1. 
 2. hyperthreading
@@ -909,7 +921,8 @@ insertion into containers - multiple ways
     - shared_ptr
     - write your own shared ptr, unique_ptr
 
-### Error Handling & Exceptions
+
+
 
 ### Numerical Methods
 - `std::default_random_engine`
@@ -1100,7 +1113,7 @@ $ cmake --build build
 1. https://www.youtube.com/watch?v=O7gUNNYjmsM
 1. https://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
 1. Setup CodeBlocks - https://medium.com/@yzhong.cs/code-blocks-compile-64-bit-under-windows-with-mingw-w64-79101f5bbc02 
-
+1. https://www.fluentcpp.com/2018/04/10/maps-vectors-multimap/
 
 ~~~cpp
 
