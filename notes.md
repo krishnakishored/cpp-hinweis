@@ -140,7 +140,7 @@
 
 6. ___Declare overriding functions override___
     * Member function reference qualifiers make it possible to treat lvalue and rvalue objects (*this) differently.
-    * Applying `final` to a virtual function prevents the function from being overridden in derived classes. final may also be applied to a class, in which case the class is prohibited from being used as a base class.
+    * Applying `final` to a virtual function prevents the function from being overridden in derived classes. `final` may also be applied to a class, in which case the class is prohibited from being used as a base class.
     * For overriding to occur, several requirements must be met:
         - The base class function must be virtual.
         - The base and derived function names must be identical (except in the case of destructors).
@@ -800,7 +800,14 @@ insertion into containers - multiple ways
 - disallowing copy ctor
 - copy ctor & assignment overload functions with rvalue references
 - move semantics
-- final keywords usage
+- Virtual Function Pointer Table
+    - Whenever a class defines a virtual function a hidden member variable is added to the class which points to an array of pointers to (virtual) functions called the virtual function table(VFT)
+    - VFT pointers are used at runtime to invoke the appropriate function implementations. because at compile time it may not yet be known if the base function is to be called or a derived one implemented by a class that inherits from the base class
+    - VFT is class-specific - all instances of the class has same VFT
+    - VFT carries the Run-Time Type Information(RTTI) of objects
+    - Virtual functions introduce 'dynamic dispatch' which compilers implement using v-table(VFT)
+
+
 - pure virtual methods - Interfaces
 - virtual destructor uses, why not virtual ctor
 - friend class
