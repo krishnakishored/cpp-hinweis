@@ -19,3 +19,7 @@ target_compile_features(vector_2 PRIVATE cxx_std_14)
 add_executable(vector_3)
 target_sources(vector_3 PRIVATE vector_3.cpp)
 target_compile_features(vector_3 PRIVATE cxx_std_14) 
+
+add_executable(vector_4)
+target_sources(vector_4 PRIVATE vector_4.cpp)
+target_compile_features(vector_4 PRIVATE cxx_std_14)

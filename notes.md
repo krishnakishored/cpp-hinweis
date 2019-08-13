@@ -703,6 +703,7 @@ insertion into containers - multiple ways
     std::remove_copy(str.begin(), str.end(),std::ostream_iterator<char>(std::cout), ' ');
     // removes the blank spaces
     ```
+    - If your lists are sorted (list has its own sort member function; std::sort won’t work with a list), and you want to merge them together and preserve their sorted order, use `merge` instead of splice. merge will combine the two lists into one, and if two elements are equivalent, the one from lstOne comes first in the final list. 
 
     - iteration & display using copy + ostream
 
@@ -717,8 +718,24 @@ insertion into containers - multiple ways
 - deque
 
 - vector
+    * To be safe, use `at( )` instead of `operator[]`. It throws out_of_range if the index used is > `size()`
+    * Instead of inserting, you might want simply to assign the vector to a preexisting sequence from somewhere else, erasing whatever was there before. The assign member function does this. 
+	* The biggest difference between calling `reserve` and specifying the size at construction is that reserve doesn’t initialize the slots in the buffer with anything.
+    ~~~cpp
+    vector<string> vec(100);
+    string s = vec[50]; // No problem: s is now an empty string
+    vector<string> vec2;
+    vec2.reserve(100);
+    s = vec2[50];// Undefined
+    ~~~
+    * Copying a vector
+        - Use `assign` or the copy constructor instead of looping yourself.  
+        - use `assign` for copying a subset of a sequence
+    * Store pointers to your objects in a vector instead of copies of the objects themselves. But if you do, don’t forget to delete the objects that are pointed to, because the vector won’t do it for you. explicitly Purge the contents so no one tries to delete them again (`clear()`)
+
     - storing custom datatype 
-    - storing pointers
+    
+    
     - deleting elements
     - emplace_back vs insert
     

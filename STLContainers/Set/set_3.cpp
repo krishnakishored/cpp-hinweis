@@ -8,6 +8,17 @@
 #include<unordered_set>
 #endif
 
+#ifndef SET
+#define SET
+#include <set>
+#endif
+
+#ifndef MAP
+#define MAP
+#include<map>
+#endif
+
+
 
 #ifndef UNORDERED_MAP
 #define UNORDERED_MAP
@@ -20,6 +31,10 @@
 #define STRING
 #include <string>
 #endif
+
+
+using std::cout;
+using std::endl;
 
 //Recipe 7-5. Storing Unsorted Elements in a Container for Very Fast Lookups
 class SetObject;
@@ -105,6 +120,77 @@ int main_unordered_Set_Map()
 
 	return 0;
 }
+
+//From C++ CookBook
+
+//6.9 Storing Containers in Containers
+//Example 6 - 12. Storing set pointers in a map
+using std::set;
+using std::string;
+using std::map;
+
+typedef set<string> SetStr;
+typedef map<string, SetStr*> MapStrSetStr;
+
+//Dummy database class
+class DBConn {
+public:
+	void beginTxn() {}
+	void endTxn() {}
+	void execSql(string& sql) {}
+};
+/*
+ a simple transaction log class that stores its data as a map of string-set pointer pairs.
+ Imagine that you need to store a series of SQL statements in batches, 
+ to be executed against a relational database all at once sometime in the future. 
+ That’s what SimpleTxnLog does
+ */
+class SimpleTxnLog 
+{
+public:
+	SimpleTxnLog() {}
+	~SimpleTxnLog() { purge(); }
+	// Add an SQL statement to the list
+	void addTxn(const string& id,
+		const string& sql) {
+		SetStr* pSet = log_[id];      // This creates the entry for this id if it isn't there
+		if (pSet == NULL) 
+		{            
+			pSet = new SetStr();
+			log_[id] = pSet;
+		}
+		pSet->insert(sql);
+	}
+// Apply the SQL statements to the database, one transaction at a time
+	void apply() {
+		for (MapStrSetStr::iterator p = log_.begin();
+		p != log_.end(); ++p) {
+			conn_->beginTxn();
+			// Remember that a map iterator actually refers to an object of pair<Key,Val>.
+			// The set pointer is stored in p->second.
+			for (SetStr::iterator pSql = p->second->begin();pSql != p->second->end(); ++pSql) 
+			{
+				string s = *pSql;
+				conn_->execSql(s);
+				cout << "Executing SQL: " << s << endl;
+			}
+			conn_->endTxn();
+			delete p->second;
+		}
+		log_.clear();
+	}
+
+	void purge() {
+		for (MapStrSetStr::iterator p = log_.begin();
+		p != log_.end(); ++p)
+			delete p->second;
+		log_.clear();
+	}
+	// ...
+private:
+	MapStrSetStr log_;
+	DBConn* conn_;
+};
 
 int main()
 {
