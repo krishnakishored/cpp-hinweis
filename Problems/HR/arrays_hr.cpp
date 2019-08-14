@@ -263,8 +263,7 @@ int main_minimumBribes()
 
 
 
-
-// Complete the rotLeft function below.
+//https://www.hackerrank.com/challenges/array-left-rotation/problem
 vector<int> rotLeft(vector<int> a, int d) {
     /*
         Given an array  of  integers and a number, , perform  left rotations on the array. 
@@ -430,12 +429,15 @@ vector<string> split_string(string input_string)
     return splits;
 }
 
+
+
+
 int main()
 {
 //    main_arrayManipulation();
-   main_minimumSwaps();
+//    main_minimumSwaps();
     // main_minimumBribes();
-    // main_rotLeft();
+    main_rotLeft();
 //    main_hourglassSum();
     return 0;
 }

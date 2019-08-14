@@ -434,6 +434,54 @@ int main_BalancedBrackets()
 
     return 0;
 }
+// https://www.hackerrank.com/challenges/maximum-element/problem
+struct node{
+    int data;
+    node* next;
+    node* max;
+};
+
+int main_maximumElement_usingCustomlinkedList(){
+//to do
+return 0;
+} 
+
+
+int main_maximumElement() 
+{
+	//using two stacks
+	int iterations = 0, choice = 0, number = 0, max = 0;
+	std::stack<int> elements;
+    std::stack<int> max_elem;
+
+	cin >> iterations;
+	while (iterations) {
+		cin >> choice;
+		switch (choice) {
+		case 1:
+			cin>> number;
+            elements.push(number);
+            if(max_elem.empty() || ( number > max_elem.top()))
+            {
+                max_elem.push(number);
+            }
+			break;
+		case 2:
+            if (elements.top() == max_elem.top()){
+                max_elem.pop();
+            }
+    		elements.pop();
+			break;
+		case 3:
+		    std::cout << max_elem.top()<<endl;
+			break;
+		default:
+			return 0;
+		}
+		iterations--;
+	}
+	return 0;
+}
 
 int main()
 {
@@ -442,7 +490,8 @@ int main()
     // main_minMax_riddle();
     // main_largestRectangle();
     // main_BalancedBrackets();
-    main_MyQueue();
+    // main_MyQueue();
+    main_maximumElement();
     return 0;
 }
 
