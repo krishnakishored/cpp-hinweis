@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#include<array>
 #include<string>
 #include <algorithm>
 #include <numeric>
@@ -122,9 +123,33 @@ int main_flippingBits()
     return 0;
 }
 
+// https://www.hackerrank.com/challenges/c-tutorial-for-loop/problem
+
+int main_forloop()
+{
+
+        // Complete the code.
+    std::array<std::string,9> numbers ={"one","two","three","four","five","six","seven","eight", "nine"};
+    int a=0,b=0;
+    cin>>a>>b;
+    string result="";
+    for(int i=a;i<=b;i++){
+        if(i<=numbers.size()){
+            result = numbers[i-1];
+        }
+        else{
+            result = ((i-1)%2)?"even":"odd";
+        }
+        cout << result<<"\n";
+    }
+
+    return 0;
+}
+
 int main()
 {
-    main_minMaxSum();
-    main_flippingBits();
+    // main_minMaxSum();
+    // main_flippingBits();
+    main_forloop();
     return 0;
 }
