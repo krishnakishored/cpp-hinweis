@@ -13,7 +13,11 @@ target_compile_features(hashing_hr2 PRIVATE cxx_std_14)
 
 add_executable(arrays_hr)
 target_sources(arrays_hr PRIVATE arrays_hr.cpp)
-target_compile_features(arrays_hr PRIVATE cxx_std_14) 
+target_compile_features(arrays_hr PRIVATE cxx_std_14)
+
+add_executable(arrays_2_hr)
+target_sources(arrays_2_hr PRIVATE arrays_2_hr.cpp)
+target_compile_features(arrays_2_hr PRIVATE cxx_std_14)
 
 add_executable(strings_hr)
 target_sources(strings_hr PRIVATE strings_hr.cpp)

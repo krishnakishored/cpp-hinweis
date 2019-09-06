@@ -299,7 +299,7 @@ vector<int> rotRight(vector<int> a, int d) {
 int main_rotLeft()
 {
     // ofstream fout(getenv("OUTPUT_PATH"));
-    std::ofstream fout("./DataFiles/stringOutput.txt");
+    std::ofstream fout("../DataFiles/stringOutput.txt");
 
     string nd_temp;
     getline(cin, nd_temp);
@@ -430,8 +430,6 @@ vector<string> split_string(string input_string)
 }
 
 
-
-
 int main()
 {
 //    main_arrayManipulation();
@@ -439,5 +437,6 @@ int main()
     // main_minimumBribes();
     main_rotLeft();
 //    main_hourglassSum();
+    
     return 0;
 }
