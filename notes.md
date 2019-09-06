@@ -759,15 +759,6 @@ insertion into containers - multiple ways
 - `inplace_merge` - if you have two sequences that are contiguous (i.e., they are parts of the same sequence), and they are sorted, and you want the entire sequence sorted, you can use inplace_merge instead of a sort algorithm. The advantage is that inplace_ merge can run in linear time if there is enough additional memory available. If there isn’t, it runs in n log n, which is the average complexity of sort anyway.
 - to know how or where two sequences differ, you can use `lexicographical_compare` or `mismatch`.
 
-- types of sortings
-- `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
-- `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
-
- `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
-
-`nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
-
-- `partition`
 - `bind2nd`
 - set opertations can be called the set operations on any sequence, not    just sets.`set_union, set_difference, set_intersection, set_symmetric_difference` - If a and b are sets symmetric difference is (a-b) U (b-a) - set of all elements that appear in one set but not the other
 - generator functions for filling containers
@@ -777,7 +768,7 @@ insertion into containers - multiple ways
  copy(v.begin(), v.end(), ostream_iterator<string>(cout, ", "));
 ```
 - write your own copy_if
-- `random_shuffle`
+
 - `std::function` - Class template std::function is a general-purpose polymorphic function wrapper. 
    Instances of std::function can store, copy, and invoke any Callable target -- functions, lambda expressions, bind expressions, or other function objects, as well as pointers to member functions and pointers to data members. The stored callable object is called the target of std::function. If a std::function contains no target, it is called empty. Invoking the target of an empty std::function results in std::bad_function_call exception being thrown.
    std::function satisfies the requirements of CopyConstructible and CopyAssignable.
@@ -1035,6 +1026,142 @@ insertion into containers - multiple ways
 | Bubble  |   |   |   |   |
 
 
+
+### STL Algorithms
+-----
+1. Heaps
+    ~~~cpp
+    std::make_heap(begin(numbers), end(numbers))
+    //to insert in a heap
+    std::push_heap(begin(numbers), end(numbers))
+    //to remove
+    std::pop_heap(begin(numbers), end(numbers))
+    numbers.pop_back(); 
+    //repeating pop_heap() & pop_back() removes the max element in every iteration
+    ~~~
+
+1. Sorting
+    - `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
+    - `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
+    - `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
+    - `nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
+    - `sort_heap`- Sorts the elements in the heap range [first,last) into ascending order. The range loses its properties as a heap.
+    - `inplace_merge` - Merges two consecutive sorted ranges: [first,middle) and [middle,last), putting the result into the combined sorted range [first,last).
+
+
+1. Partitioning
+    - `partition` -  Rearranges the elements from the range [first,last), in such a way that all the elements for which pred returns true precede all those for which it returns false. The iterator returned points to the first element of the second group.
+    - `partition_point` - Returns an iterator to the first element in the partitioned range [first,last) for which pred is not true, indicating its partition point.
+    The elements in the range shall already be partitioned, as if partition had been called with the same arguments.
+    An iterator to the first element in the partitioned range [first,last) for which pred is not true, or last if it is not true for any element.
+
+1. permetuatuons
+    - `rotate` - Rotates the order of the elements in the range [first,last), in such a way that the element pointed by middle becomes the new first element.
+    - `random_shuffle` - Rearranges the elements in the range [first,last) randomly.
+       To specify a uniform random generator as those defined in <random>, see shuffle.
+    - `shuffle` - Randomly rearrange elements in range using generator
+    - `next_permutation` - Rearranges the elements in the range [first,last) into the next lexicographically greater permutation.
+    - `prev_permutation`
+    - `reverse`
+
+1. Secret Runes
+    - `stable_* ` - does what the algorithm does but keeps the relative order:  `stable_sort`, `stable_partition`
+    - `is_*` - takes prdicate of a collection & checks _sorted: `is_partitioned`, `is_heap`, 
+    - `is_*_until` - returns an iterator to the first position where the predicate doesn't hold true anymore - `is_sorted_until`, `is_heap_until`, `is_partitioned_until`
+    
+1. Queries    
+    
+    //Numeric
+    //count
+    //accumulate or reduce
+    //inner_product
+    //adjacent_difference
+    //partial_sum(inclusive and exclusive)
+    //adjacent difference
+    //sample
+
+    //quering on a range
+    //all_of
+    //any_of
+    //none_of
+
+    //quering on two ranges
+    //equal is_permutation
+    //lexicographic_compare
+    //mismatch first position they messup the range
+    
+    //searching
+    //->for sorted
+    //binary search
+    //equal_range
+    //lower_bound
+    //upper_bound
+    //->not sorted
+    //find
+    //adjacent_find 
+
+    //searching for a range
+    //search
+    //find_end
+    //find_first_of
+    
+    //max_element
+    //min_element
+    //maxmin element
+
+    //Algos_on_sets
+    //set_difference
+    //set_intersection
+    //set_union
+    //set_symmetric_difference
+    //includes
+    //merge
+
+    //Movers
+    //copy
+    //move
+    //copy_backwards
+    //move_backwards
+
+    //Value_modifiers
+    //fill
+    //generate
+    //iota (increments)
+    //replace
+
+    //Structure_Changes
+    //remove + erase
+    //unique (removes adjacent)
+    //remove_copy
+    //unique_copy
+    //reverse_copy
+    
+    //rotate_copy
+    //replace_copy
+    //partition_copy
+    //partial_sort_copy
+    //find_if
+    //find_if_not
+    //count_if
+    //remove_if
+    //remove_copy_if
+    //replace_if
+    //replace_copy_if
+    //copy_if
+
+    //lonely_islands
+    //transform ( can also take 2 parameters)
+    //for_each 
+
+    //Raw_memory
+    //uninitialized _fill
+    //              _copy
+    //              _move
+    //destroy
+    // *_n takes size instead of end
+    //back_inserted
+
+-----    
 
 //Date - 22-Feb-2016
 /*
