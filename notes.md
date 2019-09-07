@@ -589,9 +589,6 @@ void f(Widget&& w);
     - class std::future provides the ability to process the future outcome of a concur- rent computation.  However, you can process this outcome only once. 
     For std::shared_future,  multiple get() calls are possible and yield the same result or throw the same exception.
 
-
-
-
 - use of `thread_local`
 - mutex vs semafore
     * Don’t pass pointers and references to protected data outside the scope of the lock, whether by returning them from a function, storing them in externally visible memory, or passing them as arguments to user-supplied functions.
@@ -679,41 +676,155 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - Both `std::thread` objects and `future` objects can be thought of as handles to system threads.
 ----
 ## Chrono
-
-
 ----
 ##
 -----
-## STL - Containers, Algo, Iter
+
+### STL Algorithms
+-----
+1. Heaps
+    ~~~cpp
+    std::make_heap(begin(numbers), end(numbers))
+    //to insert in a heap
+    std::push_heap(begin(numbers), end(numbers))
+    //to remove
+    std::pop_heap(begin(numbers), end(numbers))
+    numbers.pop_back(); 
+    //repeating pop_heap() & pop_back() removes the max element in every iteration
+    ~~~
+
+1. Sorting
+    - `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
+    - `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
+    - `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
+    - `nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
+    - `sort_heap`- Sorts the elements in the heap range [first,last) into ascending order. The range loses its properties as a heap.
+    - `inplace_merge` - Merges two consecutive sorted ranges: [first,middle) and [middle,last), putting the result into the combined sorted range [first,last).
+
+1. Partitioning
+    - `partition` -  Rearranges the elements from the range [first,last), in such a way that all the elements for which pred returns true precede all those for which it returns false. The iterator returned points to the first element of the second group.
+    - `partition_point` - Returns an iterator to the first element in the partitioned range [first,last) for which pred is not true, indicating its partition point.
+    The elements in the range shall already be partitioned, as if partition had been called with the same arguments.
+    An iterator to the first element in the partitioned range [first,last) for which pred is not true, or last if it is not true for any element.
+
+1. Permututions
+    - `rotate` - Rotates the order of the elements in the range [first,last), in such a way that the element pointed by middle becomes the new first element.
+    - `random_shuffle` - Rearranges the elements in the range [first,last) randomly.
+       To specify a uniform random generator as those defined in <random>, see shuffle.
+    - `shuffle` - Randomly rearrange elements in range using generator
+    - `next_permutation` - Rearranges the elements in the range [first,last) into the next lexicographically greater permutation.
+    - `prev_permutation`
+    - `reverse`
+
+1. Secret Runes
+    - `stable_* ` - does what the algorithm does but keeps the relative order:  `stable_sort`, `stable_partition`
+    - `is_*` - takes prdicate of a collection & checks _sorted: `is_partitioned`, `is_heap`, 
+    - `is_*_until` - returns an iterator to the first position where the predicate doesn't hold true anymore - `is_sorted_until`, `is_heap_until`, `is_partitioned_until`
+
+1. Queries    
+    
+    * numeric
+        - `count` - Returns the number of elements in the range [first,last) that compare equal to val.
+        - `accumulate` - Returns the result of accumulating all the values in the range [first,last) to init.
+        - `reduce` - in other words, reduce behaves like std::accumulate except the elements of the range may be grouped and rearranged in arbitrary order
+        - `tranform_reduce` - applies a functor, then reduces out of order. transform_reduce can be used to parallelize `std::inner_product`
+        - `partial_sum` - Computes the partial sums of the elements in the subranges of the range [first, last) and writes them to the range beginning at d_first
+        - `inclusive_scan` - similar to std::partial_sum, includes the ith input element in the ith sum
+        - `exclusive_scan` - similar to std::partial_sum, excludes the ith input element in the ith sum
+        - `inner_product` - computing the dot product. It can also be used for computing distance between two vectors or compute the norm of a vector. Computes inner product (i.e. sum of products) or performs ordered map/reduce operation on the range [first1, last1) and the range beginning at first2.
+        -`adjacent difference` -  Computes the differences between the second and the first of each adjacent pair of elements of the range [first, last) and writes them to the range beginning at d_first + 1. An unmodified copy of *first is written to *d_first.
+        - `sample` - Selects n elements from the sequence [first; last) such that each possible sample has equal probability of appearance, and writes those selected elements into the output iterator out. Random numbers are generated using the random number generator g.
+    
+    * quering a property on a single range 
+        - `all_of`, `any_of`, `none_of`
+        - For an empty collection [) - all_of returns true, any_of returns false, none_of returns true
+    
+    * quering on two ranges
+        - `equal` to compare two sequences for equality
+        - `is_permutation`
+        - `lexicographic_compare`
+           to know how or where two sequences differ, you can use `lexicographical_compare` or `mismatch`.
+        - `mismatch` - return a pair of iterators first position they messup the range
+    
+    * searching a value
+        - Not sorted - `find`, `adjacent_find`
+        - Sorted 
+            - `equal_range`
+            - `lower_bound`, `upper_bound` - used for inserting in a sorted range
+            - `binary search` - returns a bool
+        
+    * searching for a range of values
+        - `search` - first occurance of a subrange in a big range
+        - `find_end` - From the end, first occurance of a subrange in a big range
+        - `find_first_of` - first occurance of any of the values in the input sub range
+    
+    * searching for a relative value 
+        - `max_element`
+        - `min_element`
+        - `minmax_element` - returns a pair of iterators
+
+1. Algos_on_sets
+   - `set_difference` - inputs are sorted & output is sorted - linear complexity
+   - `set_intersection`
+   - `set_union`
+   - `set_symmetric_difference` 
+   - `includes` - returns a bool
+   - `merge` - takes two sorted collections (neither is modified by merge) & merges them into one sorted collection
+
+1. Movers
+    - `copy`
+    - `move`
+    - `copy_backwards`
+    - `move_backwards`
+    - `swap_ranges`
+
+1. Value_modifiers - changes the values inside of the collections
+    - `fill`
+    - `generate`
+    - `iota` - increments
+    - `replace`
+
+1. Structure_Changes
+    - `remove`  `remove` doesn’t actually remove anything. It moves everything that isn’t equal to the value you specify to the beginning of the sequence, and returns an iterator that refers to the first element following them. Then, it is up to you to actually call erase on the container to delete the objects between [p, end), where p is the iterator returned by remove. `<collection>.erase()` method should be invoked
+    
+
+    - `unique` - removes adjacent duplicates
+
+    - `remove_copy`, `unique_copy`, `reverse_copy`, `rotate_copy`,`replace_copy`,`partition_copy`, `partial_sort_copy`
+        use `remove_copy` and `remove_copy_if`, which work the same way as remove and remove_if, except that there is also an output iterator you pass in where the resulting data is supposed to go (leaves the original data unchanged).
+        ```cpp
+        // removes the blank spaces
+        std::remove_copy(str.begin(), str.end(),std::ostream_iterator<char>(std::cout), ' '); 
+        ```
+    
+    - `find_if`, `find_if_not`, `count_if`, `remove_if`, `remove_copy_if`, `replace_if`, `replace_copy_if`, `copy_if`
+        Use `remove_if` -  if you want to remove elements that satisfy some predicate, and not simply those equal to some value
+        
+----
+1. lonely_islands
+    - `transform` - applies a function to the elements of a function,(can also take 2 parameters - f(x1,y1), f(x2,y2))
+    - `for_each`- doesn't care even if the function returns void(may have side effects)
+----
+1. Raw_memory
+    * copy,fill,move use operator=. the unitialized_* are used for the unconstructed ones (only raw mem but not initialized)
+    - `uninitialized_fill`
+    - `uninitialized_copy`
+    - `uninitialized_move`
+    - `destroy`  - calls the objects created by uninitialized_*
+    - `*_n` takes `size` instead of `end` - `copy_n`,`fill_n`,`uninitialized_move`,`uninitialized_default_construct`,... 
+    - `back_inserter` - A back_inserter is a class defined in \<iterator\> that provides a convenient way to create an output iterator that calls push_back on a sequence every time you assign a value to it. 
+    - `inserter` - is a function template defined in \<iterator\> that takes a container and an iterator and returns an output iterator that calls insert on its first argument when values are assigned to it. 
+-----    
+### STL Containers 
  - ToDo create a table form for insert, delete operations for all the containers
 insertion into containers - multiple ways 
 - list :
     - insertion: push_back, push_front, insert
-    - deletion : erase,remove, remove_if
-        - Remove elements from a container  - use erase() member function of the container
-
-    `remove` doesn’t actually remove anything. __It moves everything that isn’t equal to the value you specify to the beginning of the sequence, and returns an iterator that refers to the first element following them.__ Then, it is up to you to actually call erase on the container to delete the objects between [p, end), where p is the iterator returned by remove.
     
-
-    Use `remove_if` -  if you want to remove elements that satisfy some predicate, and not simply those equal to some value
-
-    Finally, you may want to leave the original sequence alone (maybe it’s const) and copy the results minus some elements into a new sequence.use `remove_copy` and `remove_copy_if`, which work the same way as remove and remove_if, except that there is also an output iterator you pass in where the resulting data is supposed to go.
-
-    ```cpp
-    std::remove_copy(str.begin(), str.end(),std::ostream_iterator<char>(std::cout), ' ');
-    // removes the blank spaces
-    ```
-    - If your lists are sorted (list has its own sort member function; std::sort won’t work with a list), and you want to merge them together and preserve their sorted order, use `merge` instead of splice. merge will combine the two lists into one, and if two elements are equivalent, the one from lstOne comes first in the final list. 
-
-    - iteration & display using copy + ostream
-
-
 - set:
-    - change the default sorting, compartor
-    
+    - change the default sorting, compartor  
 
 - map
-
 
 - deque
 
@@ -742,61 +853,36 @@ insertion into containers - multiple ways
 - rope 
 
 - STL containers of pointers
-
-- use `empty()` function to test a container for emptiness. Don't compare begin==end or size==0
-
-- `back_inserter` - A back_inserter is a class defined in \<iterator\> that provides a convenient way to create an output iterator that calls push_back on a sequence every time you assign a value to it. 
-- `inserter` - is a function template defined in \<iterator\> that takes a container and an iterator and returns an output iterator that calls insert on its first argument when values are assigned to it. 
-
-- `equal` to compare two sequences for equality
-
-
-- `transform` or `for_each` - used for transforming elements in sequence
-- `search`
-- `accumulate` - function from the \<numeric\> header to compute the sum, and then divide by the size to get the mean.
--  `merge` - merge merges two sorted sequences and places the result into a third
-    Both sequences must be sorted (or the output will be garbage), and neither is modified by merge
-- `inplace_merge` - if you have two sequences that are contiguous (i.e., they are parts of the same sequence), and they are sorted, and you want the entire sequence sorted, you can use inplace_merge instead of a sort algorithm. The advantage is that inplace_ merge can run in linear time if there is enough additional memory available. If there isn’t, it runs in n log n, which is the average complexity of sort anyway.
-- to know how or where two sequences differ, you can use `lexicographical_compare` or `mismatch`.
-
 - `bind2nd`
-- set opertations can be called the set operations on any sequence, not    just sets.`set_union, set_difference, set_intersection, set_symmetric_difference` - If a and b are sets symmetric difference is (a-b) U (b-a) - set of all elements that appear in one set but not the other
-- generator functions for filling containers
 - nullary functor
-- `unique_copy`, `copy` 
-```cpp
- copy(v.begin(), v.end(), ostream_iterator<string>(cout, ", "));
-```
-- write your own copy_if
-
 - `std::function` - Class template std::function is a general-purpose polymorphic function wrapper. 
    Instances of std::function can store, copy, and invoke any Callable target -- functions, lambda expressions, bind expressions, or other function objects, as well as pointers to member functions and pointers to data members. The stored callable object is called the target of std::function. If a std::function contains no target, it is called empty. Invoking the target of an empty std::function results in std::bad_function_call exception being thrown.
    std::function satisfies the requirements of CopyConstructible and CopyAssignable.
 
--  types of iterators - 
-    * An `input iterator` supports advancing forward with p++ or ++p, and dereferencing with *p. __You get back an rvalue when you dereference though__. Input iterators are used for things like streams, where dereferencing an input iterator means pulling the next element off the stream, __so you can only read a particular element once__.
-    
-    * An `output iterator` supports advancing forward with p++ or ++p, and dereferenc- ing with *p. It’s different from an input iterator though, in that you can’t read from one, __you can only write to it—and only write to an element once.__ __Also unlike an input iterator, you get back an lvalue and not an rvalue, so you can assign to it but not read from it.__
-    
-    A `forward iterator` merges the functionality of an input iterator and an output iterator: it supports ++p and p++, and you can treat *p as an rvalue or an lvalue. You can use a forward iterator anywhere you need an input or an output iterator, with the added benefit that __you can read from or write to a dereferenced forward iterator as many times as you see fit.__
-    
-    As the name implies, a `bidirectional iterator` goes forward and backward. __It is a forward iterator that adds the ability to go backward using --p or p--.__
-    
-    A `random-access iterator` does everything a bidirectional iterator does, but it also __supports pointer-like operations__. You can use p[n] to access the element that is n positions after p in the sequence, or you can add to or subtract from p with +, +=, -, or -= to move the iterator forward some number of elements in constant time. You can also compare two iterators p1 and p2 with <, >, <=, or >= to determine their relative order (as long as they both point to the same sequence).
-
-    other kinds of iterators are `streamiterators` - A stream iterator is an iterator that is based on a stream instead of a range of elements in some container,and streamiterators allow you to treat streaminput as an input iterator ,`streambufferiterators`,and `rawstorageiterators`
-    `const`,`reverse`
-
 - `distance` - count no.of elements when only iterators are given
-- `max_element` & `min_element` - return iterators not values
+
 - `valarray` -   can be used as a numerical vector especially those on high-performance machines, can apply specialized vector optimizations to it. 
    valarray provides numerous overloaded operators specifically for working with numerical vectors. 
    These operators provide such functionality as vector addition and scalar multiplication.
    The valarray template can also be used with the standard algorithms like a C-style array.
-
-- `inner_product` - computing the dot product. It can also be used for computing distance between two vectors or compute the norm of a vector
-- `std::plus`
 - `std::iterator_traits`
+----
+
+### STL Iterators
+
+* An `input iterator` supports advancing forward with p++ or ++p, and dereferencing with *p. __You get back an rvalue when you dereference though__. Input iterators are used for things like streams, where dereferencing an input iterator means pulling the next element off the stream, __so you can only read a particular element once__.
+
+* An `output iterator` supports advancing forward with p++ or ++p, and dereferenc- ing with *p. It’s different from an input iterator though, in that you can’t read from one, __you can only write to it—and only write to an element once.__ __Also unlike an input iterator, you get back an lvalue and not an rvalue, so you can assign to it but not read from it.__
+
+* A `forward iterator` merges the functionality of an input iterator and an output iterator: it supports ++p and p++, and you can treat *p as an rvalue or an lvalue. You can use a forward iterator anywhere you need an input or an output iterator, with the added benefit that __you can read from or write to a dereferenced forward iterator as many times as you see fit.__
+
+* As the name implies, a `bidirectional iterator` goes forward and backward. __It is a forward iterator that adds the ability to go backward using --p or p--.__
+
+* A `random-access iterator` does everything a bidirectional iterator does, but it also __supports pointer-like operations__. You can use p[n] to access the element that is n positions after p in the sequence, or you can add to or subtract from p with +, +=, -, or -= to move the iterator forward some number of elements in constant time. You can also compare two iterators p1 and p2 with <, >, <=, or >= to determine their relative order (as long as they both point to the same sequence).
+
+* other kinds of iterators are `streamiterators` - A stream iterator is an iterator that is based on a stream instead of a range of elements in some container,and streamiterators allow you to treat streaminput as an input iterator ,`streambufferiterators`,and `rawstorageiterators`
+`const`,`reverse`
+
 -----
 ### OOAD
 
@@ -894,13 +980,6 @@ insertion into containers - multiple ways
         - High level modules should not depend upon low level modules. Both should depend upon abstractions.
         - Abstractions should not depend upon details. Details should depend upon abstractions. 
         - *Would you solder a lamp directly to the electrical wiring in a wall?*
-
-## DesignPatterns
-- Singleton(threadSafe)
-- Command Pattern
-- Factories
-- 
-
 -----
 ### Strings
  - A generic version that suits wstring & string using basic_string<T> template
@@ -919,10 +998,7 @@ insertion into containers - multiple ways
 - adding ostream, operator<< as a friend class
 - sstream,fstream
 -----
-
-
 ### File Handling
-
 -----
 ### Parsing - JSON, XML, text, csv
 -----
@@ -936,9 +1012,6 @@ insertion into containers - multiple ways
     - shared_ptr
     - write your own shared ptr, unique_ptr
 
-
-
-
 ### Numerical Methods
 - `std::default_random_engine`
 - `std::uniform_int_distribution`
@@ -947,14 +1020,8 @@ insertion into containers - multiple ways
     
 -----
 * using static_cast to fix narrowing conversion
-
 * Initializing Objects with Initializer Lists - std::initializer_list
-
-
 * T (auto return type)
-
-    - 
-
 * using - used for declaration
 * auto&& 
 * reference capture, capture by value
@@ -964,10 +1031,7 @@ insertion into containers - multiple ways
 * namespace literals
 * duration_cast, difference between start & end time
 * std::noshowbase, dec, showbase
-
 * lvalue & rvalue
-
-
 * move ctor
 * reinterpret_cast
 
@@ -1026,143 +1090,7 @@ insertion into containers - multiple ways
 | Bubble  |   |   |   |   |
 
 
-
-### STL Algorithms
------
-1. Heaps
-    ~~~cpp
-    std::make_heap(begin(numbers), end(numbers))
-    //to insert in a heap
-    std::push_heap(begin(numbers), end(numbers))
-    //to remove
-    std::pop_heap(begin(numbers), end(numbers))
-    numbers.pop_back(); 
-    //repeating pop_heap() & pop_back() removes the max element in every iteration
-    ~~~
-
-1. Sorting
-    - `sort` - take random-access iterators; vector,deque,string/wstring. for list use `list.sort()`
-    - `partial_sort` - Takes three random-access iterators: first, middle, and last, and optionally a comparison functor. It has two postconditions: the elements in the range (first, middle) are all less than those in the range (middle, last), and the range (first, middle) is sorted according to operator< or your comparison functor. In other words, __it sorts until the first n elements are sorted.__
-    - `partial_sort_copy` - It takes the first n elements from the source range and copies them into the desti- nation range in sorted order. If the destination range (n) is shorter than the source range (m), only n items are copied into the destination range
-    - `nth_element` - Takes three random-access iterator arguments: first, nth, and last, and an optional comparison functor __It puts the element referred to by nth at the index where it would be if the entire range were sorted.__ Consequently, __all elements in the range (first, nth) are less than the element at the nth position (those in (nth, last) are not sorted, but are all greater than the ones preceding nth)__. You would use this if you only want one or a few elements sorted in a range, but you don’t want to pay for sorting the entire range if you don’t have to.
-    - `sort_heap`- Sorts the elements in the heap range [first,last) into ascending order. The range loses its properties as a heap.
-    - `inplace_merge` - Merges two consecutive sorted ranges: [first,middle) and [middle,last), putting the result into the combined sorted range [first,last).
-
-
-1. Partitioning
-    - `partition` -  Rearranges the elements from the range [first,last), in such a way that all the elements for which pred returns true precede all those for which it returns false. The iterator returned points to the first element of the second group.
-    - `partition_point` - Returns an iterator to the first element in the partitioned range [first,last) for which pred is not true, indicating its partition point.
-    The elements in the range shall already be partitioned, as if partition had been called with the same arguments.
-    An iterator to the first element in the partitioned range [first,last) for which pred is not true, or last if it is not true for any element.
-
-1. permetuatuons
-    - `rotate` - Rotates the order of the elements in the range [first,last), in such a way that the element pointed by middle becomes the new first element.
-    - `random_shuffle` - Rearranges the elements in the range [first,last) randomly.
-       To specify a uniform random generator as those defined in <random>, see shuffle.
-    - `shuffle` - Randomly rearrange elements in range using generator
-    - `next_permutation` - Rearranges the elements in the range [first,last) into the next lexicographically greater permutation.
-    - `prev_permutation`
-    - `reverse`
-
-1. Secret Runes
-    - `stable_* ` - does what the algorithm does but keeps the relative order:  `stable_sort`, `stable_partition`
-    - `is_*` - takes prdicate of a collection & checks _sorted: `is_partitioned`, `is_heap`, 
-    - `is_*_until` - returns an iterator to the first position where the predicate doesn't hold true anymore - `is_sorted_until`, `is_heap_until`, `is_partitioned_until`
-    
-1. Queries    
-    
-    //Numeric
-    //count
-    //accumulate or reduce
-    //inner_product
-    //adjacent_difference
-    //partial_sum(inclusive and exclusive)
-    //adjacent difference
-    //sample
-
-    //quering on a range
-    //all_of
-    //any_of
-    //none_of
-
-    //quering on two ranges
-    //equal is_permutation
-    //lexicographic_compare
-    //mismatch first position they messup the range
-    
-    //searching
-    //->for sorted
-    //binary search
-    //equal_range
-    //lower_bound
-    //upper_bound
-    //->not sorted
-    //find
-    //adjacent_find 
-
-    //searching for a range
-    //search
-    //find_end
-    //find_first_of
-    
-    //max_element
-    //min_element
-    //maxmin element
-
-    //Algos_on_sets
-    //set_difference
-    //set_intersection
-    //set_union
-    //set_symmetric_difference
-    //includes
-    //merge
-
-    //Movers
-    //copy
-    //move
-    //copy_backwards
-    //move_backwards
-
-    //Value_modifiers
-    //fill
-    //generate
-    //iota (increments)
-    //replace
-
-    //Structure_Changes
-    //remove + erase
-    //unique (removes adjacent)
-    //remove_copy
-    //unique_copy
-    //reverse_copy
-    
-    //rotate_copy
-    //replace_copy
-    //partition_copy
-    //partial_sort_copy
-    //find_if
-    //find_if_not
-    //count_if
-    //remove_if
-    //remove_copy_if
-    //replace_if
-    //replace_copy_if
-    //copy_if
-
-    //lonely_islands
-    //transform ( can also take 2 parameters)
-    //for_each 
-
-    //Raw_memory
-    //uninitialized _fill
-    //              _copy
-    //              _move
-    //destroy
-    // *_n takes size instead of end
-    //back_inserted
-
------    
-
+----
 //Date - 22-Feb-2016
 /*
 1.When is copy constructor invoked? Mention all the scenarios
@@ -1234,7 +1162,7 @@ insertion into containers - multiple ways
 
 
 
-➜  clang++ Concurrency/multithread_q/asynchronous_1.cpp -std=c++14  -o ./bin/async     ✭
+➜  `clang++ Concurrency/multithread_q/asynchronous_1.cpp -std=c++14  -o ./bin/async`     ✭
 
 -----
 
@@ -1246,25 +1174,23 @@ insertion into containers - multiple ways
 1. add installation location of the binaries to "PATH" environment variable
 1. Use CMake GUI ( less error prone) to generate the codeblocks project files 
 
+- $ `cmake --version`
+    cmake version 3.15.0
 
-$ cmake --version   
-cmake version 3.15.0
+- $ `mingw32-g++.exe --version`
+    mingw32-g++.exe (i686-posix-dwarf-rev0, Built by MinGW-W64 project) 8.1.0
 
-$ mingw32-g++.exe --version
-mingw32-g++.exe (i686-posix-dwarf-rev0, Built by MinGW-W64 project) 8.1.0
-
-
-* Alternately use cmake from cmd prompt@ project directory
-$ cmake -S . -B build -G "CodeBlocks - MinGW Makefiles"
-$ cmake --build build
+- Alternately use cmake from cmd prompt@ project directory
+    - $ ` cmake -S . -B build -G "CodeBlocks - MinGW Makefiles" `
+    - $ ` cmake --build build `
 
 -----
-
-## References 
+### References 
 1. https://www.youtube.com/watch?v=O7gUNNYjmsM
 1. https://eli.thegreenplace.net/2016/c11-threads-affinity-and-hyperthreading/
 1. Setup CodeBlocks - https://medium.com/@yzhong.cs/code-blocks-compile-64-bit-under-windows-with-mingw-w64-79101f5bbc02 
 1. https://www.fluentcpp.com/2018/04/10/maps-vectors-multimap/
+1. https://www.youtube.com/watch?v=bFSnXNIsK4A
 
 ~~~cpp
 
