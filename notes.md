@@ -946,7 +946,7 @@ insertion into containers - multiple ways
 - calling a specific version of virtual function
 
 -----
-## Design
+### Design
 
 - `SOLID`
     - Avoiding tight coupling is the key!
@@ -981,7 +981,7 @@ insertion into containers - multiple ways
         - Abstractions should not depend upon details. Details should depend upon abstractions. 
         - *Would you solder a lamp directly to the electrical wiring in a wall?*
 -----
-### Strings
+#### Strings
  - A generic version that suits wstring & string using basic_string<T> template
  - Padding, trimming
  - to print a vector<string>
@@ -993,32 +993,62 @@ insertion into containers - multiple ways
 
 -----
 
-### Streams
+#### Streams
 - copy(first,last,ostream_iterator<int> (cout," "));
 - adding ostream, operator<< as a friend class
 - sstream,fstream
 -----
-### File Handling
+#### File Handling
 -----
-### Parsing - JSON, XML, text, csv
+#### Parsing - JSON, XML, text, csv
 -----
-### Pointers Vs References - use cases & syntaxes
+#### Pointers Vs References - use cases & syntaxes
     - Const pointer, pointer to a const
     - function pointers
     - void pointer
 
-### Smart pointers
+#### Smart pointers
     - unique_ptr.swap
     - shared_ptr
     - write your own shared ptr, unique_ptr
 
-### Numerical Methods
+#### Numerical Methods
 - `std::default_random_engine`
 - `std::uniform_int_distribution`
 ----
 
-    
------
+
+#### Exception Handling
+- You can throw or catch any C++ type that lives up to some simple requirements, namely that it has a valid copy constructor and destructor.
+(“trying” something, “throwing” an exception, and subsequently “catching” it)
+- throw `domain_error`,  `std::runtime_error`
+
+- Use try and catch in the constructor to clean up properly if an exception is thrown during construction.
+- The ellipsis in the catch handler means that anything that is thrown will be caught. 
+
+### general questions
+* partial template specialization
+* overloading vs templates - pros and cons
+* templates with variable no.of arguments
+* What are references & classify them
+* pointers vs references
+* pass by value, reference and pointers - differences?
+* using const Vs #define 
+* how floating point is stored. 
+* Diff between floating point, double, fixed point
+
+* curiously recursive template pattern
+* reading xml,json, csv file types
+* use of namespaces
+* bitwise operations - left shift, right shift,packing, masking, narrowing conversions - use cases
+* Overloading new and delete to limit the number of instances
+* Memory Management - address space, heap, stack
+* static
+* handling json
+* function objects vs function pointers (both collectively called functors)
+    - Function objects refer to instances of classes or structs that overload operator (). A function object is more efficient because most compilers can more easily inline a function object.Also it can have a state. 
+    - You can pass values to its constructor, which it stores in its fields for use later on. This gives function objects an expressive equivalency as with the concept of closures found in other programming languages.
+    - Finally, function objects can be defined within another function or class. Function pointers have to be declared in a namespace scope.
 * using static_cast to fix narrowing conversion
 * Initializing Objects with Initializer Lists - std::initializer_list
 * T (auto return type)
@@ -1034,53 +1064,16 @@ insertion into containers - multiple ways
 * lvalue & rvalue
 * move ctor
 * reinterpret_cast
+* C Vs C++
+    - size of an array is decided at compile time in C & at runtime in C++
 
-#### Exception Handling
-- You can throw or catch any C++ type that lives up to some simple requirements, namely that it has a valid copy constructor and destructor.
-(“trying” something, “throwing” an exception, and subsequently “catching” it)
-- throw `domain_error`,  `std::runtime_error`
-
-- Use try and catch in the constructor to clean up properly if an exception is thrown during construction.
-- The ellipsis in the catch handler means that anything that is thrown will be caught. 
-
-
-#### C vs C++
-- size of an array is decided at compile time in C & at runtime in C++
-
-
-#### general questions
-- partial template specialization
-- overloading vs templates - pros and cons
-- templates with variable no.of arguments
-- What are references & classify them
-- pointers vs references
-- pass by value, reference and pointers - differences?
-- using const Vs #define 
-- how floating point is stored. 
-- Diff between floating point, double, fixed point
-
-- curiously recursive template pattern
-- reading xml,json, csv file types
-- use of namespaces
-- bitwise operations - left shift, right shift,packing, masking, narrowing conversions - use cases
-- Overloading new and delete to limit the number of instances
-- Memory Management - address space, heap, stack
-- static
-- handling json
-- function objects vs function pointers (both collectively called functors)
-    - Function objects refer to instances of classes or structs that overload operator (). A function object is more efficient because most compilers can more easily inline a function object.Also it can have a state. 
-    - You can pass values to its constructor, which it stores in its fields for use later on. This gives function objects an expressive equivalency as with the concept of closures found in other programming languages.
-    - Finally, function objects can be defined within another function or class. Function pointers have to be declared in a namespace scope.
-
-
-
-#### Util functions
+### Util functions
 - tokenizing - convert a string to vector<string>
 - 2-D matix class & it's methods to fill
 - Matrix -  Multiplication, Addition, Transpose, Inverse, Identity.
 - Given the product the matrix - find the missing elements in the input matrices
 
-### Comparison of sorting algorithms
+### Comparison of sortings
 
 | Sort  |  key words | Complexity  |   |   |
 |---|---|---|---|---|
