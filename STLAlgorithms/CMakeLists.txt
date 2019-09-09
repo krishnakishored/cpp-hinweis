@@ -23,4 +23,6 @@ add_executable(algo_5)
 target_sources(algo_5 PRIVATE algo_5.cpp)
 target_compile_features(algo_5 PRIVATE cxx_std_14) 
 
- 
+add_executable(algo_6)
+target_sources(algo_6 PRIVATE algo_6.cpp)
+target_compile_features(algo_6 PRIVATE cxx_std_14) 

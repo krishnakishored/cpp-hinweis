@@ -13,6 +13,7 @@
 #include <ctime>
 #include <mutex>
 
+/*Util Function*/
 int GetRandom(int max){
     srand(time(NULL));
     return rand() % max;
