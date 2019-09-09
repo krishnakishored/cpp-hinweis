@@ -147,46 +147,11 @@ int main_forloop()
     return 0;
 }
 
-
-// https://www.hackerrank.com/challenges/deque-stl/problem
-/*
-2
-5 2
-3 4 6 3 4
-7 4
-3 4 5 8 1 4 10
-
-o/p:
-4 6 6 4
-8 8 8 10
-*/
-void printKMax(int arr[], int n, int k)
-{
-
-}
-
-int main_deque()
-{
-	int t;
-	cin >> t;
-	while(t>0) {
-		int n,k;
-    	cin >> n >> k;
-    	int i;
-    	int arr[n];
-    	for(i=0;i<n;i++)
-      		cin >> arr[i];
-    	printKMax(arr, n, k);
-    	t--;
-  	}
-  	return 0;
-}
-
 int main()
 {
     // main_minMaxSum();
     // main_flippingBits();
     // main_forloop();
-    main_deque();
+    
     return 0;
 }

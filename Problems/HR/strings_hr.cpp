@@ -107,6 +107,27 @@ int main_alternatingCharacters()
 
     return 0;
 }
+// https://www.hackerrank.com/challenges/attribute-parser/problem
+/*
+4 3
+<tag1 value = "HelloWorld">
+<tag2 name = "Name1">
+</tag2>
+</tag1>
+tag1.tag2~name
+tag1~name
+tag1~value
+
+o/p: 
+Name1
+Not Found!
+HelloWorld
+*/
+
+int main_attribute_parser() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   
+    return 0;
+}
 
 int main()
 {

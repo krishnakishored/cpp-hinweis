@@ -21,6 +21,7 @@
 
 #include<algorithm>
 #include<iterator>
+#include <iomanip> 
 
 
 using std::string;
@@ -71,7 +72,63 @@ int main_vector_erase()
     return 0;
 }
 
+//https://www.hackerrank.com/challenges/prettyprint/problem
+
+
+int main_printpretty() {
+	int T; cin >> T;
+	cout << std::setiosflags(std::ios::uppercase);
+	cout << std::setw(0xf) << std::internal;
+	while(T--) {
+		double A; cin >> A;
+		double B; cin >> B;
+		double C; cin >> C;
+
+		/* Enter your code here */
+
+	}
+	return 0;
+
+}
+
+
+// https://www.hackerrank.com/challenges/deque-stl/problem
+/*
+2
+5 2
+3 4 6 3 4
+7 4
+3 4 5 8 1 4 10
+
+o/p:
+4 6 6 4
+8 8 8 10
+*/
+void printKMax(int arr[], int n, int k)
+{
+
+}
+
+int main_deque()
+{
+	int t;
+	cin >> t;
+	while(t>0) {
+		int n,k;
+    	cin >> n >> k;
+    	int i;
+    	int arr[n];
+    	for(i=0;i<n;i++)
+      		cin >> arr[i];
+    	printKMax(arr, n, k);
+    	t--;
+  	}
+  	return 0;
+}
+
 int main(){
     main_vector_erase();
+    // main_deque();
+    // main_printpretty();
     return 0;
 }
