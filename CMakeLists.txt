@@ -7,7 +7,7 @@ project(CPPHinweis
             
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)            
 
-
+add_subdirectory(Features)
 add_subdirectory(STLContainers)
 add_subdirectory(STLAlgorithms)
 add_subdirectory(Concurrency)
