@@ -49,7 +49,7 @@
 ----
 ### New features 
 1. ___uniform initialization___ ,  () vs {}
-    * Braced initialization is the most widely usable initialization syntax, it prevents narrowing conversions, and it’s immune to C++’s most vexing parse.
+    * Braced initialization is the most widely usable initialization syntax, it prevents narrowing conversions, and it’s immune to C++’s `most vexing parse`.
     ~~~cpp
     Widget w2(); // most vexing parse! declares a function  named w2 that returns a Widget!
     Widget w3{}; // calls Widget ctor with no args
@@ -65,7 +65,7 @@
     Fctor fct;
     std::thread t1(fct); //ok 
 
-    std::thread t2(Fctor()); // most vexing parse
+    std::thread t2(Fctor()); // most vexing parse - treaated as function declaration
     std::thread t2((Fctor())); // with extra pair of () .. this works as expected.
 
     ~~~

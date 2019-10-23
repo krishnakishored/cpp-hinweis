@@ -57,6 +57,7 @@ int main_lock_guard()
  * 1. Avoid global variables
  * 2. Mutex should bundle together with the resource it is protecting.
  */
+
 class LogFile {
 	std::mutex m_mutex;
 	ofstream f;
@@ -145,7 +146,7 @@ void function_1(stack& st) {
 
 
 
-
+// Second Example: Racing condition
 
 /* Deadlock */
 class LogFile2 {
@@ -337,9 +338,9 @@ int main_LogFile5()
 
 int main()
 {
-	// main_lock_guard(); 
+	main_lock_guard(); 
 	// main_LogFileWithFctor(); 
-	main_LogFile5();
+	// main_LogFile5();
 	return 0;
 }
 

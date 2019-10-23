@@ -24,7 +24,7 @@ using std::ofstream;
 
 // First example: using a function
 void thread1() {
-	std::cout << "Helldo, Worlds" << std::endl;
+	std::cout << "Hello, World" << std::endl;
 }
 
 int main_join_detach() 
@@ -37,16 +37,12 @@ int main_join_detach()
 
 	return 0;
 }
+
 // If neither detach nor join is called, terminate() will be called for the t1.
 // A thread can only be joined once or detached once. After it is joined on detached
 // it becomes unjoinable ( t.joinable() returns false )
 
-
-
-
-
-
-// Second Example: Racing condition
+//############################################################################
 class Fctor {
 	ofstream& m_str;
 public:
@@ -56,6 +52,32 @@ public:
 			m_str << "from t1: " << i << endl;
 	}
 };
+
+// If exception happens in the main()'s for loop, t1.join() will not be called.
+int main_exceptionSafe() 
+{
+	cout << "Hollo Bo" << endl;
+	std::ofstream f;
+	f.open("log.txt");
+
+	Fctor fctor(f);
+	std::thread t1(fctor);
+
+	try {
+		for (int i=0; i<100; i++)
+			cout << "from main: " << i << endl;  // Exception may happen here, before t1.join()
+	} catch (...) {
+		t1.join();
+		throw;
+	}
+
+	t1.join();
+	f.close();
+
+	return 0;
+}
+
+
 
 int main_usingFunctor() 
 {
@@ -75,42 +97,6 @@ int main_usingFunctor()
 	return 0;
 }
 
-
-
-
-// 1. expeirment with t1.join()
-// 2. expeirment with t1.detach()
-// 3. expeirment with t1 closing file
-// 4. expeirment with  cout instead of f and m_str
-// 4. experiment with t1.get_id();
-// 4. experiment with thread::hardware_concurrentcy();
-
-// A common solution: do not share, make a copy.
-
-
-// If exception happens in the main()'s for loop, t1.join() will not be called.
-int main_exceptionSafe() 
-{
-	cout << "Hollo Bo" << endl;
-	std::ofstream f;
-	f.open("log.txt");
-
-	Fctor fctor(f);
-	std::thread t1(fctor);
-
-	try {
-		for (int i=0; i<100; i++)
-			cout << "from main: " << i << endl;  // Exception may happen here
-	} catch (...) {
-		t1.join();
-		throw;
-	}
-
-	t1.join();
-	f.close();
-
-	return 0;
-}
 
 // Alternative way: RAII - calling join() in destructor
 class ThreadJoiner {
@@ -148,8 +134,20 @@ int main_threadJoiner()
 
 
 
-// Passing parameters to a thread
+//############################################################################
 
+// 1. expeirment with t1.join()
+// 2. expeirment with t1.detach()
+// 3. expeirment with t1 closing file
+// 4. expeirment with  cout instead of f and m_str
+// 4. experiment with t1.get_id();
+// 4. experiment with thread::hardware_concurrentcy();
+
+// A common solution: do not share, make a copy.
+
+
+
+// Passing parameters to a thread
 void call_from_thread(string& msg) {
 	msg = "Beauty is only skin-deep";
 	cout << "t1 says: " << msg << endl;
@@ -166,7 +164,8 @@ int main_passingParams() {
 	cout << "main says: " << s << endl;
 	return 0;
 }
-// Paramters are always passed by value (copied).  why? same reason as bind(): deferred execution means the parmeter objects might not be valid at the time of execution
+// Paramters are always passed by value (copied).  
+// why? same reason as bind(): deferred execution means the parmeter objects might not be valid at the time of execution
 // To pass by reference:
 // 1. use std::ref
 // 2. use pointer
@@ -195,11 +194,32 @@ int main_classMethod() {
 
 
 
+// class Fctor2 {
+// 	public:
+// 		void operator()(string& msg){
+// 			cout<<"t1 says: " << msg << "\n";
+// 			msg = "Trust is the mother of deceit";
+// 		}
+// };
+
+// int main_movingParams2(){
+// 	string s = "Where there is no trust, there is no love";
+// 	cout<< std::this_thread::get_id() << "\n";
+	
+// 	// Fctor2 fctor;
+	
+// 	std::thread t1 ((Fctor2(s)), std::move(s)); 
+// 	std::thread t2 = std::move(t1);
+// 	t2.join();
+
+// 	return 0;
+// }
+
+
 // Thread with moving parameters
 void call_from_thread2(string msg) {
 	cout << "t1 says: " << msg << endl;
 }
-
 
 int main_movingParams()
 {
@@ -219,9 +239,10 @@ int main_movingParams()
 int main()
 {
     // main_join_detach();
-    main_classMethod();
+    // main_classMethod();
     // main_exceptionSafe();
-    // main_movingParams();
+    main_movingParams();
+	// main_movingParams2();
     // main_threadJoiner();
     // main_usingFunctor();
     return 0;
