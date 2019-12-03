@@ -10,5 +10,5 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_subdirectory(HR)
 add_subdirectory(OneOff)
-# add_subdirectory(Set)
+add_subdirectory(EducativeIO)
 # add_subdirectory(Map)
