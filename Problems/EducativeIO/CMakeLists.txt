@@ -10,3 +10,9 @@ target_compile_features(sliding_window PRIVATE cxx_std_14)
 add_executable(breadth_first_search)
 target_sources(breadth_first_search PRIVATE breadth_first_search.cpp)
 target_compile_features(breadth_first_search PRIVATE cxx_std_14) 
+
+
+
+add_executable(tries)
+target_sources(tries PRIVATE tries.cpp)
+target_compile_features(tries PRIVATE cxx_std_14) 

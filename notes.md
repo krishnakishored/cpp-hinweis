@@ -452,8 +452,6 @@ void f(Widget&& w);
 #### Date Race & Mutex
 
 
-
-
 ------
 ### Exceptions & Safety
 * You can throw or catch any C++ type that lives up to some simple requirements, namely that it has a valid copy constructor and destructor. 
@@ -867,7 +865,6 @@ insertion into containers - multiple ways
    The valarray template can also be used with the standard algorithms like a C-style array.
 - `std::iterator_traits`
 ----
-
 ### STL Iterators
 
 * An `input iterator` supports advancing forward with p++ or ++p, and dereferencing with *p. __You get back an rvalue when you dereference though__. Input iterators are used for things like streams, where dereferencing an input iterator means pulling the next element off the stream, __so you can only read a particular element once__.
@@ -1025,7 +1022,69 @@ insertion into containers - multiple ways
 
 - Use try and catch in the constructor to clean up properly if an exception is thrown during construction.
 - The ellipsis in the catch handler means that anything that is thrown will be caught. 
+### Tries
+- Trie basically comes from the word “retrieval”, as the main purpose of using this structure is that it provides fast retrieval. 
+  Tries(also called 'Prefix Trees') are mostly used for searching words in the dictionary, provide auto-suggestions in search engines, and for IP routing as well.
+- Common Applications of Tries
+    1. Autocomplete Words - This feature can be very efficiently implemented with the help of tries as they reduce the overall cost of performance.
+    1. Spell-Checking - Tries come in handy when you need to perform a spell-check on a word entered by the user. 
+    1. Searching for a Phone Contact - Another real-life use of Tries is searching for contacts in our contact list. It provides auto-suggestions based on the combination of letters that we enter.
+- Properties of a Trie
+    To maintain its overall efficiency, tries follow a certain structure:
+        1. Tries are similar to graphs as they are a combination of nodes where each node represents a unique alphabet.
+        1. Each node can point to None or other children nodes.
+        1. The size of a trie depends upon the number of alphabets. For example, in English there are 26 alphabets, so the number of unique nodes cannot exceed 26.
+        1. The depth of a trie depends on the longest word that it stores.
+        1. Another important property of a trie is that it provides the same path for words which share a common prefix. 
+           For example, “there” and “their” have a common prefix “the”. Hence, they will share the same path till "e". After that, the path will split into two branches. This is the backbone of the trie functionality.
 
+- The TrieNode Class
+    1. `The node of a trie represents an alphabet`. For example, if we want to insert “hello” in the trie, we will need to add 5 nodes, one for each alphabet.
+    1. A typical node in a trie consists of three data members:
+        - `* children[]`: An array which consists of pointers to children nodes. The size of this array depends on the number of alphabets. By default, all are set to NULL.
+        - `isEndWord`: A flag to indicate the end of a word. It is set to false by default and is only updated when a word ends during insertion. When this flag is true, the node is treated as a leaf.
+
+- The Trie Class
+    1. The Trie will be implemented using the `TrieNode` class. As discussed above, a trie node represents one alphabet which keeps pointers to its children nodes. Each node can have at max 26 children if we are storing English words.
+    1. A root node is placed at the top and contains 26 pointers (one per alphabet). These pointers hold either NULL or another trieNode. The root is similar to the headNode from linked lists.
+    1. The index of the children pointers is decided based on the sequence of the alphabets (starting from 0). For instance, the node containing the alphabet 'a' (if it exists) will be stored at the 0th index, b at the 1st, and node z will come at the 25th index.
+    1. All the words are stored in a top-bottom manner. While storing the last character, we should `always set the isEndWord flag as true to indicate the end of a word`. 
+       _This technique helps us in searching for a word to see if it even exists_.
+
+ - Word Insertion
+    - The insertion process is fairly simple. For each character in the key, we check if it exists at the position we desire. 
+      If the character is not present, then we insert the corresponding trie node at the correct index in children. While inserting the last node, we also set the value of isEndWord to true.    
+    1. Case 1: `No Common Prefix`
+       In this situation, we want to insert a word whose characters are not common with any other node path.
+    1. Case 2: `Common Prefix`
+       This occurs when a portion of the starting characters of your word are already in the trie starting from the root node.
+    1. Case 3: `Word Exists`
+       This occurs if your word is a substring of another word that already exists in the trie.
+       For example, if we want to insert a word the in the trie which already contains their, the path for the already exists. 
+       Therefore, we simply need to set the value of isEndWord to true at 'e' in order to represent the end of the word for 'the'.   
+
+- Search Algorithm
+    - If we want to check whether a word is present in the trie or not, we just need to keep tracing the path in the trie corresponding to the characters in word
+    1. Case 1: `Non-Existent Word`
+       If we are searching for a word that doesn’t exist in the trie and is not a subset of any other word, by principle, we will find NULL before the last character of the word can be found.
+    1. Case 2: `Word Exists as a Substring`
+       This is the case where our word can be found as a substring of another word, but the isEndWord property for it has been set to false.   
+    1. Case 3: `Word Exists`
+       The success case is when there exists a path from the root to the node of the last character and the node is also marked as endOfWord:
+
+- Deleting a Word in a Trie
+    - While deleting a node, we need to make sure that the node that we are trying to delete does not have any further child branches. 
+      If there are no branches, then we can easily remove the node. However, if the node contains child branches, this opens up a few scenarios which we will cover below.
+    1. Case 1: `Word with No Suffix or Prefix`
+       If the word to be deleted has no suffix or prefix and all the character nodes of this word do not have any other children, then we will delete all these nodes up to the root.
+    1. Case 2: `Word is a Prefix`
+       If the word to be deleted is a prefix of some other word, then the value of isEndWord of the last node of that word is set to false and no node is deleted.
+    1. Case 3: `Word Has a Common Prefix`
+       If the word to be deleted has a common prefix and the last node of that word does not have any children, 
+       then this node is deleted along with all the parent nodes in the branch which do not have any other children and are not end characters.
+
+
+However, if any of these nodes have other children (are part of another branch), then they will not be deleted.
 ### general questions
 * partial template specialization
 * overloading vs templates - pros and cons
