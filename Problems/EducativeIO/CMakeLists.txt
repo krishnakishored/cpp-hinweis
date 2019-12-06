@@ -18,3 +18,11 @@ target_compile_features(tries PRIVATE cxx_std_14)
 add_executable(inplace_reverse_linkedlist)
 target_sources(inplace_reverse_linkedlist PRIVATE inplace_reverse_linkedlist.cpp)
 target_compile_features(inplace_reverse_linkedlist PRIVATE cxx_std_14) 
+
+add_executable(stack_queue)
+target_sources(stack_queue PRIVATE stack_queue.cpp)
+target_compile_features(stack_queue PRIVATE cxx_std_14) 
+
+# add_executable(recursion)
+# target_sources(recursion PRIVATE recursion.cpp)
+# target_compile_features(recursion PRIVATE cxx_std_14) 

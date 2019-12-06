@@ -1,6 +1,6 @@
 ## Modern C++  
 ----
-#### Deducing Types
+### Deducing Types
 1. ___template type deduction___
     ~~~cpp
     template<typename T>
@@ -673,7 +673,7 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 - void futures - use case: creating a suspended thread
 - Both `std::thread` objects and `future` objects can be thought of as handles to system threads.
 ----
-## Chrono
+### Chrono
 ----
 ##
 -----
