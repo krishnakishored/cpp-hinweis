@@ -20,6 +20,15 @@ Challenge 4 : Implement a Queue Using Stacks
 
 Challenge 5 : Sort Values in a Stack
 
+Challenge 6 : Evaluate Postfix Expression Using a Stack
+
+Challenge 7 : Next Greater Element Using in Stack
+
+Challenge 8 : Check Balanced Parentheses Using Stack
+
+
+Challenge 9 : min() Function Using a Stack
+
 
 */    
 
@@ -237,7 +246,7 @@ void sortStack(stack<int>& myStack) {
 
 
 
-int main(){
+int main_sortStack(){
     stack<int> myStack;
     myStack.push(2);
     myStack.push(97);
@@ -249,4 +258,220 @@ int main(){
     sortStack(myStack);
     // showstack(myStack);
     cout<<myStack.top()<<endl;
+    return 0;
+}
+
+
+//-----//
+int* nextGreaterElement(int *arr, int size) {
+
+    stack<int> myStack;
+    int* result=new int[size];
+
+    int next,top;
+    for (int i = size - 1; i >= 0; i--) {
+
+        next = arr[i]; //potential nextGreaterElement
+        top = myStack.top();
+
+        while( !myStack.empty() && top <= next ) {
+            
+            myStack.pop();
+            top = myStack.top();
+        }
+
+        if(!myStack.empty() )
+            result[i] = myStack.top();
+        else
+            result[i] = -1;
+
+        //For next iteration
+        myStack.push(next);
+
+    } //end of for loop
+
+    return result;
+}
+
+
+
+int main_nextGreaterElement(){
+  
+   
+   int arr[] = {4,6,3,2,8,1,9,9};
+   int arr_size=sizeof(arr) / sizeof(arr[0]); 
+   int* res=nextGreaterElement(arr,arr_size);
+    cout << "____Result____" << endl;
+   for (int i = 0; i < arr_size; i++) 
+        cout << arr[i] << " ---> " << res[i] << endl; 
+  return 0;
+}
+
+
+class newStack {
+
+    //We will use two stacks mainStack to hold origional values
+    //and minStack to hold minimum values. Top of minStack will always
+    //be the minimum value from mainStack
+    stack<int> mainStack;
+    stack<int> minStack;
+public:
+    // newStack(int size) {
+    //     // mainStack = new myStack(size);
+    //     // minStack = new myStack(size);
+    // }
+
+    //Removes and return value from newStack
+    //1. Pop element from minStack to make it sync with mainStack,
+    //2. Pop element from mainStack and return that value.
+    int pop() {
+
+        int top = minStack.top();
+        minStack.pop();
+        return top;
+
+    }
+
+    //Pushes values into newStack
+    //1. Push value in mainStack and check value with the top value of minStack
+    //2. If value is greater than top, then push top in minStack
+    //else push value in minStack.
+    void push(int value) {
+
+        mainStack.push(value);
+
+        if (value > minStack.top() && !minStack.empty()) {
+            minStack.push(minStack.top());
+        }
+        else
+            minStack.push(value);
+    }
+
+    //Returns minimum value from newStack in O(1) Time
+    int min() {
+        return minStack.top();
+    }
+
+};
+
+int main_minStack(){
+    newStack mystack;
+    mystack.push(5);
+    mystack.push(2);
+    mystack.push(4);
+    mystack.push(1);
+    mystack.push(3);
+    mystack.push(9);
+    
+   cout << mystack.min() << endl;
+   mystack.pop();
+   mystack.pop();
+   mystack.pop();
+   cout << mystack.min() << endl;
+  
+ return 0; 
+}
+
+
+//Create Stack => stack = myStack(5); where 5 is size of stack
+//Push Function => stack.push(int);  //Inserts the element at top
+//Pop Function => stack.pop(); //Removes and returns the element at top
+//TopFunction => stack.getTop();  //Returns top element
+//Helper Functions => stack.isEmpty();  //returns bool
+bool isBalanced(string exp) {
+
+    //Iterate through the string exp.
+    //For each opening parentheses, push it into stack
+    //For every closing parentheses check for its opening parentheses in stack
+    //If you can't find the opening parentheses for any closing one then returns false.
+    //and after complete traversal of string exp, if there's any opening parentheses left
+    //in stack then also return fal/se.
+    //At the end return true if you haven't encountered any of the above false conditions.
+    // myStack stack(exp.length());
+    stack<char> myStack;
+    char character;
+
+    for (int i = 0; i < exp.length(); i++) {
+
+        character = exp[i];
+        if (character == '}' || character == ')' || character == ']') {
+
+            if (myStack.empty())
+                return false;
+
+            if ((character == '}' && myStack.top() != '{') || (character == ')' && myStack.top() != '(') || (character == ']' && myStack.top() != '['))
+                return false;
+
+        }
+        else
+            myStack.push(character);
+
+    }
+    if (!myStack.empty())
+        return false;
+
+    return true;
+}
+
+int main_isBalanced(){
+  cout << isBalanced("{[()]}") << endl;
+  cout << isBalanced("[{(}]") << endl;
+  return 0;
+}
+
+
+int evaluatePostFix(string exp) {
+
+    stack<int> myStack ;
+    char character;
+    int x,y;
+    //1.Scan expression character by character,
+    //2.If character is a number push it in stack
+    //3.If character is operator then pop two elements from stack
+    //perform the operation and put the result back in stack
+    //At the end, Stack will contain result of whole expression.
+    for (int i = 0; i < exp.length(); i++) {
+
+        character = exp[i];
+
+        if (!isdigit(character)) {
+            x = myStack.top();myStack.pop();
+            y = myStack.top();myStack.pop();
+
+            switch (character) {
+            case '+':
+                myStack.push(y + x);
+                break;
+            case '-':
+                myStack.push(y - x);
+                break;
+            case '*':
+                myStack.push(y * x);
+                break;
+            case '/':
+                myStack.push(y / x);
+                break;
+            }
+        }
+        else
+            myStack.push(character-'0');
+
+    }
+    int top = myStack.top();
+    myStack.pop();
+    return top;
+
+}
+
+void main_EvaluatePostFix(){
+ cout << evaluatePostFix("921*-8-4+") << endl; 
+}
+
+int main(int argc, char const *argv[])
+{
+    // main_minStack();
+    main_twoStacks_OneArray();
+    // main_nextGreaterElement();
+    // main_EvaluatePostFix();
+    return 0;
 }
