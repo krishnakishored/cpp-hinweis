@@ -676,11 +676,28 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
 ### Chrono
 ----
 ##
+
 -----
 
 ### STL Algorithms
 -----
 1. Heaps
+   - A valid heap must be a complete binary tree.
+   - The nodes of a heap must be ordered according to the heap property
+     If Node A has a child, Node B; 
+        maxHeap has key(A) >= key(B)key(A)>=key(B) 
+        minHeap has key(A) <= key(B)key(A)<=key(B)
+   - Time complexity of insertion & deletion operations in heap - O(logn)
+   - Time complexity of the search operation in a heap - O(n)
+   - If Heap tree is represented using arrays, then the node at the kth position will have its 
+        leftChild : 2k+1  
+        rightChild : 2k+2  
+   - If Heap tree is represented using arrays, then node at kth position will have its parent at index - floor(k−1/2)
+
+
+
+
+   
     ~~~cpp
     std::make_heap(begin(numbers), end(numbers))
     //to insert in a heap
@@ -812,6 +829,86 @@ The class `unique_lock` is a general-purpose mutex ownership wrapper allowing de
     - `*_n` takes `size` instead of `end` - `copy_n`,`fill_n`,`uninitialized_move`,`uninitialized_default_construct`,... 
     - `back_inserter` - A back_inserter is a class defined in \<iterator\> that provides a convenient way to create an output iterator that calls push_back on a sequence every time you assign a value to it. 
     - `inserter` - is a function template defined in \<iterator\> that takes a container and an iterator and returns an output iterator that calls insert on its first argument when values are assigned to it. 
+
+1. Algorithms with Parallelized Versions
+    1. std::adjacent_difference 
+    1. std::adjacent_find	
+    1. std::all_of 
+    1. std::any_of	
+    1. std::copy	
+    1. std::copy_if 
+    1. std::copy_n	
+    1. std::count	
+    1. std::count_if 
+    1. std::equal	
+    1. std::exclusive_scan	
+    1. std::fill 
+    1. std::fill_n	
+    1. std::find	
+    1. std::find_end
+    1. std::find_first_of	
+    1. std::find_if	
+    1. std::find_if_not
+    1. std::for_each
+    1. std::for_each_n	
+    1. std::generate
+    1. std::generate_n
+    1. std::includes	
+    1. std::inclusive_scan
+    1. std::inner_product	
+    1. std::inplace_merge	
+    1. std::is_heap
+    1. std::is_heap_until	
+    1. std::is_partitioned	
+    1. std::is_sorted
+    1. std::is_sorted_until	
+    1. std::lexicographical_compare	
+    1. std::max_element
+    1. std::merge	
+    1. std::min_element	
+    1. std::minmax_element
+    1. std::mismatch	
+    1. std::move	
+    1. std::none_of
+    1. std::nth_element
+    1. std::partial_sort	
+    1. std::partial_sort_copy
+    1. std::partition	
+    1. std::partition_copy	
+    1. std::reduce
+    1. std::remove	
+    1. std::remove_copy
+    1. std::remove_copy_if
+    1. std::remove_if	
+    1. std::replace	
+    1. std::replace_copy
+    1. std::replace_copy_if	
+    1. std::replace_if	
+    1. std::reverse
+    1. std::reverse_copy	
+    1. std::rotate	
+    1. std::rotate_copy
+    1. std::search	
+    1. std::search_n	
+    1. std::set_difference
+    1. std::set_intersection
+    1. std::set_symmetric_difference
+    1. std::set_union
+    1. std::sort	
+    1. std::stable_partition	
+    1. std::stable_sort
+    1. std::swap_ranges	
+    1. std::transform	
+    1. std::transform_exclusive_scan
+    1. std::transform_inclusive_scan	
+    1. std::transform_reduce	
+    1. std::uninitialized_copy
+    1. std::uninitialized_copy_n	
+    1. std::uninitialized_fill	
+    1. std::uninitialized_fill_n
+    1. std::unique	
+    1. std::unique_copy
+
 -----    
 ### STL Containers 
  - ToDo create a table form for insert, delete operations for all the containers

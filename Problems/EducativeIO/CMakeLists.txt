@@ -23,6 +23,10 @@ add_executable(stack_queue)
 target_sources(stack_queue PRIVATE stack_queue.cpp)
 target_compile_features(stack_queue PRIVATE cxx_std_14) 
 
+add_executable(heap)
+target_sources(heap PRIVATE heap.cpp)
+target_compile_features(heap PRIVATE cxx_std_14) 
+
 # add_executable(recursion)
 # target_sources(recursion PRIVATE recursion.cpp)
 # target_compile_features(recursion PRIVATE cxx_std_14) 
