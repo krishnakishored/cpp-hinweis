@@ -1229,6 +1229,16 @@ However, if any of these nodes have other children (are part of another branch),
 - Matrix -  Multiplication, Addition, Transpose, Inverse, Identity.
 - Given the product the matrix - find the missing elements in the input matrices
 
+### Dynamic Programming
+ - Dynamic Programming (DP) is an algorithmic technique for solving an optimization problem by breaking it down into simpler subproblems and utilizing the fact that the optimal solution to the overall problem depends upon the optimal solution to its subproblems.
+- DP offers two methods to solve a problem.
+    1. Top-down with Memoization 
+       In this approach, we try to solve the bigger problem by recursively finding the solution to smaller sub-problems.   
+       Whenever we solve a sub-problem, we cache its result so that we don’t end up solving it repeatedly if it’s called multiple times. Instead, we can just return the saved result. This technique of storing the results of already solved subproblems is called `Memoization`
+    1. Bottom-up with Tabulation 
+       In this approach, we solve the problem “bottom-up” (i.e. by solving all the related sub-problems first). 
+       This is typically done by filling up an n-dimensional table. Based on the results in the table, the solution to the top/original problem is then computed.   
+
 ### Comparison of sortings
 
 | Sort  |  key words | Complexity  |   |   |
